@@ -1,0 +1,3 @@
+displayName = Terraria x Marvel (MCU)
+author = Just Req
+version = 0.1
