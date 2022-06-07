@@ -4,5 +4,6 @@ namespace MarvelTerrariaUniverse
 {
     public class MarvelTerrariaUniverse : Mod
     {
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -10,9 +11,47 @@ namespace MarvelTerrariaUniverse.Tiles
 {
     public class GantryTileItem : ModItem
     {
+        private readonly List<string> IronManSuitTextures = new();
+
+        private void LoadEquipTextures(string texture)
+        {
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Head", EquipType.Head, name: texture);
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Body", EquipType.Body, name: texture);
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Legs", EquipType.Legs, name: texture);
+
+            IronManSuitTextures.Add(texture);
+        }
+
+        private void SetupDrawing()
+        {
+            if (Main.netMode == NetmodeID.Server) return;
+
+            foreach (string item in IronManSuitTextures)
+            {
+                int head = EquipLoader.GetEquipSlot(Mod, item, EquipType.Head);
+                int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
+                int legs = EquipLoader.GetEquipSlot(Mod, item, EquipType.Legs);
+
+                ArmorIDs.Head.Sets.DrawHead[head] = false;
+                ArmorIDs.Body.Sets.HidesTopSkin[body] = true;
+                ArmorIDs.Body.Sets.HidesArms[body] = true;
+                ArmorIDs.Legs.Sets.HidesBottomSkin[legs] = true;
+            }
+        }
+
+        public override void Load()
+        {
+            if (Main.netMode == NetmodeID.Server) return;
+
+            LoadEquipTextures("IronManMk2");
+            LoadEquipTextures("IronManMk3");
+        }
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Gantry");
+
+            SetupDrawing();
         }
 
         public override void SetDefaults()

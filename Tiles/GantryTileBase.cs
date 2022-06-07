@@ -45,9 +45,12 @@ namespace MarvelTerrariaUniverse.Tiles
             return false;
         }
 
-        public override void FloorVisuals(Player player)
+        public override bool RightClick(int i, int j)
         {
-            player.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = true;
+            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+
+            ModPlayer.GantryUIActive = true;
+            return true;
         }
     }
 }
