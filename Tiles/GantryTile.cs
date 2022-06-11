@@ -28,11 +28,9 @@ namespace MarvelTerrariaUniverse.Tiles
 
             foreach (string item in IronManSuitTextures)
             {
-                int head = EquipLoader.GetEquipSlot(Mod, item, EquipType.Head);
                 int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
                 int legs = EquipLoader.GetEquipSlot(Mod, item, EquipType.Legs);
 
-                ArmorIDs.Head.Sets.DrawHead[head] = false;
                 ArmorIDs.Body.Sets.HidesTopSkin[body] = true;
                 ArmorIDs.Body.Sets.HidesArms[body] = true;
                 ArmorIDs.Legs.Sets.HidesBottomSkin[legs] = true;

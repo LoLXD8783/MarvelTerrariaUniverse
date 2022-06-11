@@ -22,11 +22,11 @@ namespace MarvelTerrariaUniverse.UI.Elements
             protected override void DrawChildren(SpriteBatch spriteBatch)
             {
                 Vector2 position = Parent.GetDimensions().Position();
-                Vector2 dimensions = new Vector2(Parent.GetDimensions().Width, Parent.GetDimensions().Height);
+                Vector2 dimensions = new(Parent.GetDimensions().Width, Parent.GetDimensions().Height);
                 foreach (UIElement current in Elements)
                 {
                     Vector2 position2 = current.GetDimensions().Position();
-                    Vector2 dimensions2 = new Vector2(current.GetDimensions().Width, current.GetDimensions().Height);
+                    Vector2 dimensions2 = new(current.GetDimensions().Width, current.GetDimensions().Height);
                     if (Collision.CheckAABBvAABBCollision(position, dimensions, position2, dimensions2))
                     {
                         current.Draw(spriteBatch);
@@ -35,9 +35,9 @@ namespace MarvelTerrariaUniverse.UI.Elements
             }
         }
 
-        public List<UIElement> _items = new List<UIElement>();
+        public List<UIElement> _items = new();
         protected UIScrollbar _scrollbar;
-        internal UIElement _innerList = new UIInnerList();
+        internal UIElement _innerList = new();
         private float _innerListHeight;
         public float ListPadding = 5f;
 

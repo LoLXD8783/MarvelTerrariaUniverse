@@ -6,6 +6,7 @@ using Terraria.UI;
 using MarvelTerrariaUniverse.UI.Elements;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace MarvelTerrariaUniverse.UI
 {
@@ -24,7 +25,7 @@ namespace MarvelTerrariaUniverse.UI
         UIScrollbar SuitSelectionScrollbar;
 
         readonly List<UIElement> SuitButtonPanels = new();
-        readonly List<UIElement> SuitButtonPreviews = new();
+        readonly List<UICharacterEditable> SuitButtonPreviews = new();
 
         public override void OnInitialize()
         {
@@ -49,7 +50,7 @@ namespace MarvelTerrariaUniverse.UI
 
             BackButton.OnMouseOver += Button_OnMouseOver;
             BackButton.OnMouseOut += Button_OnMouseOut;
-            BackButton.OnMouseDown += BackButton_OnMouseDown;
+            BackButton.OnMouseDown += ExitButton_OnMouseDown;
             BackButton.SetSnapPoint("ExitButton", 0);
 
             SuitSelectionPanel = new()
@@ -73,7 +74,7 @@ namespace MarvelTerrariaUniverse.UI
 
             RemoveSuitButton.OnMouseOver += Button_OnMouseOver;
             RemoveSuitButton.OnMouseOut += Button_OnMouseOut;
-            RemoveSuitButton.OnMouseDown += RemoveSuitButton_OnMouseDown;
+            RemoveSuitButton.OnMouseDown += ExitButton_OnMouseDown;
             RemoveSuitButton.SetSnapPoint("RemoveSuitButton", 0);
 
             SuitInfoPanel = new()
@@ -99,12 +100,16 @@ namespace MarvelTerrariaUniverse.UI
                 HAlign = 1f
             };
 
-            for (int i = 0; i < /*2*/85; i++)
+            SuitSelectionScrollbar.SetView(100f, 1000f);
+            SuitButtonGrid.SetScrollbar(SuitSelectionScrollbar);
+
+            Mod Mod = ModContent.GetInstance<MarvelTerrariaUniverse>();
+            for (int i = 0; i < 2; i++)
             {
                 UIPanel SuitButtonPanel = new()
                 {
                     Width = StyleDimension.FromPixels(64f),
-                    Height = StyleDimension.FromPixels(64f)
+                    Height = StyleDimension.FromPixels(64f),
                 };
 
                 SuitButtonPanels.Add(SuitButtonPanel);
@@ -114,10 +119,7 @@ namespace MarvelTerrariaUniverse.UI
                 SuitButtonPanel.OnMouseOut += Button_OnMouseOut;
                 SuitButtonPanel.OnClick += Panel_OnClick;
 
-                SuitButtonGrid._items.Add(SuitButtonPanel);
-                SuitButtonGrid._innerList.Append(SuitButtonPanel);
-
-                UICharacterEditable SuitButtonPreview = new(new(), hasBackPanel: false)
+                UICharacterEditable SuitButtonPreview = new(new(), "IronMan", SuitButtonPreviews)
                 {
                     HAlign = 0.5f,
                     VAlign = 0.5f
@@ -125,10 +127,10 @@ namespace MarvelTerrariaUniverse.UI
 
                 SuitButtonPreviews.Add(SuitButtonPreview);
                 SuitButtonPanel.Append(SuitButtonPreview);
-            }
 
-            SuitSelectionScrollbar.SetView(100f, 1000f);
-            SuitButtonGrid.SetScrollbar(SuitSelectionScrollbar);
+                SuitButtonGrid._items.Add(SuitButtonPanel);
+                SuitButtonGrid._innerList.Append(SuitButtonPanel);
+            }
 
             Append(MainPanel);
             Append(BackButton);
@@ -137,7 +139,6 @@ namespace MarvelTerrariaUniverse.UI
             MainPanel.Append(SuitInfoPanel);
 
             SuitSelectionPanel.Append(SuitButtonGrid);
-            SuitSelectionPanel.Append(SuitSelectionScrollbar);
 
             MainPanel.Append(RemoveSuitButton);
         }
@@ -155,53 +156,37 @@ namespace MarvelTerrariaUniverse.UI
             ((UIPanel)listeningElement).BorderColor = Color.Black;
         }
 
-        private void RemoveSuitButton_OnMouseDown(UIMouseEvent evt, UIElement listeningElement)
+        private void ExitButton_OnMouseDown(UIMouseEvent evt, UIElement listeningElement)
         {
             SoundEngine.PlaySound(SoundID.MenuClose);
             Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
 
-            ResetSuits(Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>());
-        }
-
-        private void BackButton_OnMouseDown(UIMouseEvent evt, UIElement listeningElement)
-        {
-            SoundEngine.PlaySound(SoundID.MenuClose);
-            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
-        }
-
-        private static void ResetSuits(MarvelTerrariaUniverseModPlayer ModPlayer)
-        {
-            ModPlayer.TransformationActive_IronManMk2 = ModPlayer.TransformationActive_IronManMk3 = false;
+            if (listeningElement == RemoveSuitButton) Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().ResetSuits();
         }
 
         private void Panel_OnClick(UIMouseEvent evt, UIElement listeningElement)
         {
-            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
-
-            ResetSuits(ModPlayer);
+            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().ResetSuits();
 
             switch (SuitButtonPanels.IndexOf(listeningElement))
             {
                 case 0:
-                    ModPlayer.TransformationActive_IronManMk2 = true;
+                    Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronManMk2 = true;
                     break;
                 case 1:
-                    ModPlayer.TransformationActive_IronManMk3 = true;
+                    Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronManMk3 = true;
                     break;
             }
 
-            ModPlayer.GantryUIActive = false;
+            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
         }
 
         public override void Update(GameTime gameTime)
         {
             if (IsMouseHovering) Main.LocalPlayer.mouseInterface = true;
 
-            for (int i = 0; i < SuitButtonPreviews.Count; i++)
-            {
-                if (i == 0) ((UICharacterEditable)SuitButtonPreviews[i]).ChangeEquipTextures("IronManMk2");
-                if (i == 1) ((UICharacterEditable)SuitButtonPreviews[i]).ChangeEquipTextures("IronManMk3");
-            }
+            if (SuitButtonPreviews.Count > 30) SuitSelectionPanel.Append(SuitSelectionScrollbar);
+            else SuitSelectionScrollbar.Remove();
         }
     }
 }

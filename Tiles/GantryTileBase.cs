@@ -49,7 +49,9 @@ namespace MarvelTerrariaUniverse.Tiles
         {
             MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
 
-            ModPlayer.GantryUIActive = true;
+            if (ModPlayer.TransformationActive_IronMan) Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().ResetSuits();
+            else ModPlayer.GantryUIActive = true;
+
             return true;
         }
     }

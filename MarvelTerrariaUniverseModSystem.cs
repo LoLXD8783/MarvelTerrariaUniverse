@@ -43,6 +43,26 @@ namespace MarvelTerrariaUniverse
                     return true;
                 }, InterfaceScaleType.UI));
             }
+
+            int hotbarIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Hotbar"));
+            GameInterfaceLayer hotbarLayer = layers[hotbarIndex];
+
+            int barsIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
+            GameInterfaceLayer barsLayer = layers[barsIndex];
+
+            if (!Main.gameMenu)
+            {
+                if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan)
+                {
+                    layers.Remove(hotbarLayer);
+                    layers.Remove(barsLayer);
+                }
+                else
+                {
+                    layers.Insert(hotbarIndex, hotbarLayer);
+                    layers.Insert(barsIndex, barsLayer);
+                }
+            }
         }
     }
 }
