@@ -1,3 +1,4 @@
+using MarvelTerrariaUniverse.Projectiles;
 using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,10 +13,11 @@ namespace MarvelTerrariaUniverse
         #region All transformations
 
         public bool TransformationActive => TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
-        public string ActiveTransformation = "IronManMk3";
+        public string ActiveTransformation = "None";
 
         public void UseEquipSlot(string texture)
         {
+            Player.head = EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{FaceplateFrameCount}", EquipType.Head);
             Player.body = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body);
             Player.legs = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Legs);
 
@@ -32,9 +34,9 @@ namespace MarvelTerrariaUniverse
             FrameEffects_IronMan();
         }
 
-        public override void PreUpdate()
+        public override void PostUpdate()
         {
-            PreUpdate_IronMan();
+            PostUpdate_IronMan();
         }
 
         public override void SetControls()
@@ -53,8 +55,12 @@ namespace MarvelTerrariaUniverse
         public bool GantryUIActive;
 
         public bool FaceplateOn = true;
-        public int FaceplateAnimFrame = 0;
+        public bool FaceplateMoving = false;
+        public int FaceplateFrameCount = 0;
         public int FaceplateFrameTimer = 0;
+
+        public bool HelmetOn = true;
+        public bool HelmetDropped = false;
 
         public bool TransformationActive_IronMan => TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
         public bool TransformationActive_IronManMk2;
@@ -62,36 +68,52 @@ namespace MarvelTerrariaUniverse
 
         public void ResetSuits()
         {
+            FaceplateFrameCount = 0;
+            FaceplateOn = true;
+            HelmetOn = true;
+
             TransformationActive_IronManMk2 = false;
             TransformationActive_IronManMk3 = false;
         }
 
         public void FaceplateToggle()
         {
-            if (!FaceplateOn)
+            if (!FaceplateMoving)
             {
-                if (FaceplateAnimFrame < 3)
-                {
-                    FaceplateFrameTimer++;
-
-                    if (FaceplateFrameTimer > 5)
-                    {
-                        FaceplateAnimFrame++;
-                        FaceplateFrameTimer = 0;
-                    }
-                }
+                FaceplateFrameCount = FaceplateOn ? 0 : 3;
+                FaceplateFrameTimer = 0;
             }
             else
             {
-                if (FaceplateAnimFrame > 0)
+                if (FaceplateFrameCount < (FaceplateOn ? 2 : 5))
                 {
                     FaceplateFrameTimer++;
 
                     if (FaceplateFrameTimer > 5)
                     {
-                        FaceplateAnimFrame--;
+                        FaceplateFrameCount++;
                         FaceplateFrameTimer = 0;
                     }
+                }
+                else
+                {
+                    FaceplateMoving = false;
+                    FaceplateOn = !FaceplateOn;
+                }
+            }
+        }
+
+        public void HelmetToggle()
+        {
+            if (!HelmetOn)
+            {
+                Player.head = -1;
+
+                if (!HelmetDropped)
+                {
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), new Vector2(Player.Center.X + 20 * Player.direction, Player.Center.Y), new Vector2(Player.velocity.X, 0f), ModContent.ProjectileType<IronManHelmet>(), 0, 0);
+
+                    HelmetDropped = true;
                 }
             }
         }
@@ -104,8 +126,6 @@ namespace MarvelTerrariaUniverse
                 drawInfo.colorArmorBody = Color.White;
                 drawInfo.colorArmorLegs = Color.White;
             }
-
-            if (TransformationActive_IronMan) FaceplateToggle();
         }
 
         public void FrameEffects_IronMan()
@@ -114,14 +134,17 @@ namespace MarvelTerrariaUniverse
             if (TransformationActive_IronManMk3) UseEquipSlot("IronManMk3");
         }
 
-        public void PreUpdate_IronMan()
+        public void PostUpdate_IronMan()
         {
             if (TransformationActive_IronMan) Main.playerInventory = false;
+
+            FaceplateToggle();
+            HelmetToggle();
         }
 
         public void SetControls_IronMan()
         {
-            if (TransformationActive_IronMan)
+            if (TransformationActive_IronMan || GantryUIActive)
             {
                 Player.controlCreativeMenu = false;
                 Player.controlHook = false;
@@ -139,7 +162,8 @@ namespace MarvelTerrariaUniverse
         {
             if (TransformationActive_IronMan)
             {
-                if (Keybinds.IronMan_ToggleFaceplate.JustPressed) FaceplateOn = !FaceplateOn;
+                if (Keybinds.IronMan_ToggleFaceplate.JustPressed) FaceplateMoving = true;
+                if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
             }
         }
 

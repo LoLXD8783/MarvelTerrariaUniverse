@@ -12,6 +12,9 @@ namespace MarvelTerrariaUniverse
         internal UserInterface GantryUserInterface;
         internal GantryUI GantryUI = new();
 
+        internal UserInterface IronManHUDUserInterface;
+        internal IronManHUD IronManHUD = new();
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -19,6 +22,10 @@ namespace MarvelTerrariaUniverse
                 GantryUserInterface = new UserInterface();
                 GantryUserInterface.SetState(GantryUI);
                 GantryUI.Activate();
+
+                IronManHUDUserInterface = new UserInterface();
+                IronManHUDUserInterface.SetState(IronManHUD);
+                IronManHUD.Activate();
             }
         }
 
@@ -29,6 +36,7 @@ namespace MarvelTerrariaUniverse
             _lastUpdateUiGameTime = gameTime;
 
             if (GantryUI.Visible) GantryUserInterface.Update(gameTime);
+            if (IronManHUD.Visible) IronManHUDUserInterface.Update(gameTime);
         }
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -42,6 +50,13 @@ namespace MarvelTerrariaUniverse
 
                     return true;
                 }, InterfaceScaleType.UI));
+
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer("MarvelTerrariaUniverse: IronManHUDUserInterface", delegate
+                {
+                    if (_lastUpdateUiGameTime != null && IronManHUD.Visible) IronManHUDUserInterface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
+
+                    return true;
+                }, InterfaceScaleType.UI));
             }
 
             int hotbarIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Hotbar"));
@@ -52,7 +67,7 @@ namespace MarvelTerrariaUniverse
 
             if (!Main.gameMenu)
             {
-                if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan)
+                if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan || Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive)
                 {
                     layers.Remove(hotbarLayer);
                     layers.Remove(barsLayer);

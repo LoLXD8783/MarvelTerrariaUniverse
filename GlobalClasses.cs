@@ -7,7 +7,7 @@ namespace MarvelTerrariaUniverse
     {
         public override bool? Active(InfoDisplay currentDisplay)
         {
-            if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan) return false;
+            if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan || Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive) return false;
             else return base.Active(currentDisplay);
         }
     }

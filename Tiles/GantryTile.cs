@@ -19,6 +19,11 @@ namespace MarvelTerrariaUniverse.Tiles
             EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Body", EquipType.Body, name: texture);
             EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Legs", EquipType.Legs, name: texture);
 
+            for (int i = 0; i < 6; i++)
+            {
+                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
+            }
+
             IronManSuitTextures.Add(texture);
         }
 
@@ -28,9 +33,17 @@ namespace MarvelTerrariaUniverse.Tiles
 
             foreach (string item in IronManSuitTextures)
             {
+                int head = EquipLoader.GetEquipSlot(Mod, item, EquipType.Head);
                 int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
                 int legs = EquipLoader.GetEquipSlot(Mod, item, EquipType.Legs);
 
+                for (int i = 0; i < 6; i++)
+                {
+                    int faceplate = EquipLoader.GetEquipSlot(Mod, $"{item}_Faceplate{i}", EquipType.Head);
+                    ArmorIDs.Head.Sets.DrawBackHair[faceplate] = false;
+                }
+
+                ArmorIDs.Head.Sets.DrawBackHair[head] = false;
                 ArmorIDs.Body.Sets.HidesTopSkin[body] = true;
                 ArmorIDs.Body.Sets.HidesArms[body] = true;
                 ArmorIDs.Legs.Sets.HidesBottomSkin[legs] = true;

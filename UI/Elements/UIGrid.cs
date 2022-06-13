@@ -49,7 +49,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
             }
         }
 
-        int cols = 1;
+        readonly int cols = 1;
 
         public UIGrid(int columns = 1)
         {
@@ -58,7 +58,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
             _innerList.Width.Set(0f, 1f);
             _innerList.Height.Set(0f, 1f);
             OverflowHidden = true;
-            base.Append(_innerList);
+            Append(_innerList);
         }
 
         public float GetTotalHeight()
@@ -152,7 +152,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
             {
                 return;
             }
-            _scrollbar.SetView(base.GetInnerDimensions().Height, _innerListHeight);
+            _scrollbar.SetView(GetInnerDimensions().Height, _innerListHeight);
         }
 
         public void SetScrollbar(UIScrollbar scrollbar)
@@ -167,16 +167,15 @@ namespace MarvelTerrariaUniverse.UI.Elements
             UpdateScrollbar();
         }
 
-        public int SortMethod(UIElement item1, UIElement item2)
+        public static int SortMethod(UIElement item1, UIElement item2)
         {
             return item1.CompareTo(item2);
         }
 
         public override List<SnapPoint> GetSnapPoints()
         {
-            List<SnapPoint> list = new List<SnapPoint>();
-            SnapPoint item;
-            if (base.GetSnapPoint(out item))
+            List<SnapPoint> list = new();
+            if (GetSnapPoint(out SnapPoint item))
             {
                 list.Add(item);
             }
