@@ -1,6 +1,7 @@
 using MarvelTerrariaUniverse.Projectiles;
 using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
@@ -12,7 +13,7 @@ namespace MarvelTerrariaUniverse
     {
         #region All transformations
 
-        public bool TransformationActive => TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
+        public bool TransformationActive => TransformationActive_IronMan;
         public string ActiveTransformation = "None";
 
         public void UseEquipSlot(string texture)
@@ -22,6 +23,13 @@ namespace MarvelTerrariaUniverse
             Player.legs = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Legs);
 
             ActiveTransformation = texture;
+        }
+
+        public void ResetEquipSlot()
+        {
+            TransformationActive_IronManMk1 = false;
+            TransformationActive_IronManMk2 = false;
+            TransformationActive_IronManMk3 = false;
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
@@ -62,7 +70,10 @@ namespace MarvelTerrariaUniverse
         public bool HelmetOn = true;
         public bool HelmetDropped = false;
 
-        public bool TransformationActive_IronMan => TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
+        public readonly List<string> IronManSuitTextures = new();
+
+        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
+        public bool TransformationActive_IronManMk1;
         public bool TransformationActive_IronManMk2;
         public bool TransformationActive_IronManMk3;
 
@@ -72,6 +83,7 @@ namespace MarvelTerrariaUniverse
             FaceplateOn = true;
             HelmetOn = true;
 
+            TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
             TransformationActive_IronManMk3 = false;
         }
@@ -120,7 +132,7 @@ namespace MarvelTerrariaUniverse
 
         public void ModifyDrawInfo_IronMan(ref PlayerDrawSet drawInfo)
         {
-            if (drawInfo.drawPlayer == UICharacterEditable.Player)
+            if (drawInfo.drawPlayer == UICharacterEquipped.DrawnPlayer)
             {
                 drawInfo.colorArmorHead = Color.White;
                 drawInfo.colorArmorBody = Color.White;
@@ -130,6 +142,7 @@ namespace MarvelTerrariaUniverse
 
         public void FrameEffects_IronMan()
         {
+            if (TransformationActive_IronManMk1) UseEquipSlot("IronManMk1");
             if (TransformationActive_IronManMk2) UseEquipSlot("IronManMk2");
             if (TransformationActive_IronManMk3) UseEquipSlot("IronManMk3");
         }

@@ -1,8 +1,7 @@
 ﻿using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
@@ -10,6 +9,7 @@ using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
 namespace MarvelTerrariaUniverse.UI
@@ -24,8 +24,6 @@ namespace MarvelTerrariaUniverse.UI
 
         private bool ClickedSearchBar;
         private bool ClickedSomething;
-
-        public List<UICharacterEditable> SuitButtonPreviews = new();
 
         public override void OnInitialize()
         {
@@ -170,7 +168,7 @@ namespace MarvelTerrariaUniverse.UI
 
             #region Suit Selection Grid
 
-            UIGrid SuitButtonGrid = new(8)
+            UIGrid SuitButtonGrid = new()
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
@@ -179,29 +177,30 @@ namespace MarvelTerrariaUniverse.UI
 
             SuitSelectionGridContainer.Append(SuitButtonGrid);
 
-            UIScrollbar SuitSelectionScrollbar = new()
+            for (int i = 0; i < 50; i++)
             {
-                Height = StyleDimension.FromPercent(1f),
-                Left = StyleDimension.FromPixels(-4f),
-                HAlign = 1f
-            };
+                UIGantryEntryButton SuitButton = new($"Iron Man Mk. {ToRoman(i + 1)}", "IronManMk1", i);
+                SuitButtonGrid.Add(SuitButton);
 
-            SuitSelectionScrollbar.SetView(100f, 1000f);
-            SuitButtonGrid.SetScrollbar(SuitSelectionScrollbar);
-
-            for (int i = 1; i < 50; i++)
-            {
-                UIGantryEntryButton SuitButton = new(SuitButtonPreviews, $"Iron Man Mk. {ToRoman(i + 1)}");
-
-                SuitButtonGrid._items.Add(SuitButton);
-                SuitButtonGrid._innerList.Append(SuitButton);
+                if (i < 3)
+                {
+                    SuitButton.Unlocked = true;
+                    if (i == 0) SuitButton.InternalName = "IronManMk1";
+                    if (i == 1) SuitButton.InternalName = "IronManMk2";
+                    if (i == 2) SuitButton.InternalName = "IronManMk3";
+                }
             }
 
             #endregion
 
             #region Suit Info Content
 
-            UIGantryEntryInfo test = new();
+            UIGantryEntryInfo test = new()
+            {
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPercent(1f),
+                PaddingTop = 10f
+            };
 
             SuitInfoContainer.Append(test);
 
@@ -210,8 +209,6 @@ namespace MarvelTerrariaUniverse.UI
 
         public static string ToRoman(int number)
         {
-            if ((number < 0) || (number > 3999)) throw new ArgumentOutOfRangeException("insert value betwheen 1 and 3999");
-            if (number < 1) return string.Empty;
             if (number >= 1000) return "M" + ToRoman(number - 1000);
             if (number >= 900) return "CM" + ToRoman(number - 900);
             if (number >= 500) return "D" + ToRoman(number - 500);
@@ -225,7 +222,13 @@ namespace MarvelTerrariaUniverse.UI
             if (number >= 5) return "V" + ToRoman(number - 5);
             if (number >= 4) return "IV" + ToRoman(number - 4);
             if (number >= 1) return "I" + ToRoman(number - 1);
-            throw new ArgumentOutOfRangeException("something bad happened");
+            return string.Empty;
+        }
+
+        private void ExitUI()
+        {
+            SoundEngine.PlaySound(SoundID.MenuClose);
+            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
         }
 
         private void FadedMouseOver(UIMouseEvent evt, UIElement listeningElement)
@@ -243,8 +246,7 @@ namespace MarvelTerrariaUniverse.UI
 
         private void Click_GoBack(UIMouseEvent evt, UIElement listeningElement)
         {
-            SoundEngine.PlaySound(SoundID.MenuClose);
-            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
+            ExitUI();
         }
 
         private void Click_SearchArea(UIMouseEvent evt, UIElement listeningElement)
@@ -334,6 +336,12 @@ namespace MarvelTerrariaUniverse.UI
             if (ClickedSomething && !ClickedSearchBar && SearchBar.IsWritingText) SearchBar.ToggleTakingText();
             ClickedSomething = false;
             ClickedSearchBar = false;
+
+            if (Main.keyState.IsKeyDown(Keys.Escape) && !Main.oldKeyState.IsKeyDown(Keys.Escape))
+            {
+                if (SearchBar.IsWritingText) GoBackHere();
+                else ExitUI();
+            }
         }
     }
 }

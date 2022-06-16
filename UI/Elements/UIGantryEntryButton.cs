@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace MarvelTerrariaUniverse.UI.Elements
@@ -15,22 +15,31 @@ namespace MarvelTerrariaUniverse.UI.Elements
         public readonly UIImage BorderOverlay;
         public readonly UIImage BorderDefault;
 
-        public readonly List<UICharacterEditable> PreviewList;
+        public UIElement ContentContainer;
+        public UIText IndexText;
+        public UIImage LockedIcon;
+
+        UICharacterEquipped Preview;
+
         public string HoverText;
+        public string InternalName;
+        public int Index;
 
         public bool Unlocked;
 
-        public UIGantryEntryButton(List<UICharacterEditable> list, string hoverText) : base()
+        public UIGantryEntryButton(string hoverText, string internalName, int index, bool unlocked = false) : base()
         {
-            PreviewList = list;
             HoverText = hoverText;
+            InternalName = internalName;
+            Unlocked = unlocked;
+            Index = index;
 
             Height = StyleDimension.FromPixels(72f);
             Width = StyleDimension.FromPixels(72f);
 
             SetPadding(0f);
 
-            UIElement ContentContainer = new()
+            ContentContainer = new()
             {
                 Width = StyleDimension.FromPixelsAndPercent(-4f, 1f),
                 Height = StyleDimension.FromPixelsAndPercent(-4f, 1f),
@@ -80,31 +89,23 @@ namespace MarvelTerrariaUniverse.UI.Elements
             OnMouseOver += MouseOver;
             OnMouseOut += MouseOut;
 
-            if (PreviewList.Count < 2)
+            IndexText = new($"{Index + 1}")
             {
-                UICharacterEditable SuitButtonPreview = new(new(), "IronMan", PreviewList)
-                {
-                    HAlign = 0.5f,
-                    VAlign = 0.5f
-                };
+                Left = StyleDimension.FromPixels(5f),
+                Top = StyleDimension.FromPixels(5f)
+            };
 
-                PreviewList.Add(SuitButtonPreview);
-                ContentContainer.Append(SuitButtonPreview);
-
-                Unlocked = true;
-            }
-            else
+            LockedIcon = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Icon_Locked"))
             {
-                UIImage LockedIcon = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Icon_Locked"))
-                {
-                    HAlign = 0.5f,
-                    VAlign = 0.5f
-                };
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
 
-                ContentContainer.Append(LockedIcon);
-
-                Unlocked = false;
-            }
+            Preview = new(new(), InternalName)
+            {
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
         }
 
         private void MouseOver(UIMouseEvent evt, UIElement listeningElement)
@@ -131,6 +132,28 @@ namespace MarvelTerrariaUniverse.UI.Elements
             base.DrawSelf(spriteBatch);
 
             if (IsMouseHovering) Main.hoverItemName = Unlocked ? HoverText : "???";
+
+            if (!Unlocked)
+            {
+                IndexText.Remove();
+                ContentContainer.Append(LockedIcon);
+
+                Preview.Remove();
+            }
+            else
+            {
+                ContentContainer.Append(IndexText);
+                LockedIcon.Remove();
+
+                Preview.Name = InternalName;
+                ContentContainer.Append(Preview);
+            }
+        }
+
+        public override int CompareTo(object obj)
+        {
+            UIGantryEntryButton other = obj as UIGantryEntryButton;
+            return Index.CompareTo(other.Index);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -11,8 +10,6 @@ namespace MarvelTerrariaUniverse.Tiles
 {
     public class GantryTileItem : ModItem
     {
-        private readonly List<string> IronManSuitTextures = new();
-
         private void LoadEquipTextures(string texture)
         {
             EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Head", EquipType.Head, name: texture);
@@ -24,14 +21,14 @@ namespace MarvelTerrariaUniverse.Tiles
                 EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
             }
 
-            IronManSuitTextures.Add(texture);
+            ModContent.GetInstance<MarvelTerrariaUniverseModPlayer>().IronManSuitTextures.Add(texture);
         }
 
         private void SetupDrawing()
         {
             if (Main.netMode == NetmodeID.Server) return;
 
-            foreach (string item in IronManSuitTextures)
+            foreach (string item in ModContent.GetInstance<MarvelTerrariaUniverseModPlayer>().IronManSuitTextures)
             {
                 int head = EquipLoader.GetEquipSlot(Mod, item, EquipType.Head);
                 int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
@@ -54,6 +51,7 @@ namespace MarvelTerrariaUniverse.Tiles
         {
             if (Main.netMode == NetmodeID.Server) return;
 
+            LoadEquipTextures("IronManMk1");
             LoadEquipTextures("IronManMk2");
             LoadEquipTextures("IronManMk3");
         }
