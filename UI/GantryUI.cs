@@ -177,17 +177,20 @@ namespace MarvelTerrariaUniverse.UI
 
             SuitSelectionGridContainer.Append(SuitButtonGrid);
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 7; i++)
             {
                 UIGantryEntryButton SuitButton = new($"Iron Man Mk. {ToRoman(i + 1)}", "IronManMk1", i);
                 SuitButtonGrid.Add(SuitButton);
 
-                if (i < 3)
+                if (i < 6)
                 {
                     SuitButton.Unlocked = true;
                     if (i == 0) SuitButton.InternalName = "IronManMk1";
                     if (i == 1) SuitButton.InternalName = "IronManMk2";
                     if (i == 2) SuitButton.InternalName = "IronManMk3";
+                    if (i == 3) SuitButton.InternalName = "IronManMk4";
+                    if (i == 4) SuitButton.InternalName = "IronManMk5";
+                    if (i == 5) SuitButton.InternalName = "IronManMk6";
                 }
             }
 

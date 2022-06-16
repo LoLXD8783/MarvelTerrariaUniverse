@@ -30,6 +30,9 @@ namespace MarvelTerrariaUniverse
             TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
             TransformationActive_IronManMk3 = false;
+            TransformationActive_IronManMk4 = false;
+            TransformationActive_IronManMk5 = false;
+            TransformationActive_IronManMk6 = false;
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
@@ -76,6 +79,9 @@ namespace MarvelTerrariaUniverse
         public bool TransformationActive_IronManMk1;
         public bool TransformationActive_IronManMk2;
         public bool TransformationActive_IronManMk3;
+        public bool TransformationActive_IronManMk4;
+        public bool TransformationActive_IronManMk5;
+        public bool TransformationActive_IronManMk6;
 
         public void ResetSuits()
         {
@@ -86,6 +92,9 @@ namespace MarvelTerrariaUniverse
             TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
             TransformationActive_IronManMk3 = false;
+            TransformationActive_IronManMk4 = false;
+            TransformationActive_IronManMk5 = false;
+            TransformationActive_IronManMk6 = false;
         }
 
         public void FaceplateToggle()
@@ -145,6 +154,9 @@ namespace MarvelTerrariaUniverse
             if (TransformationActive_IronManMk1) UseEquipSlot("IronManMk1");
             if (TransformationActive_IronManMk2) UseEquipSlot("IronManMk2");
             if (TransformationActive_IronManMk3) UseEquipSlot("IronManMk3");
+            if (TransformationActive_IronManMk4) UseEquipSlot("IronManMk4");
+            if (TransformationActive_IronManMk5) UseEquipSlot("IronManMk5");
+            if (TransformationActive_IronManMk6) UseEquipSlot("IronManMk6");
         }
 
         public void PostUpdate_IronMan()

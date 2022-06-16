@@ -54,6 +54,9 @@ namespace MarvelTerrariaUniverse.Tiles
             LoadEquipTextures("IronManMk1");
             LoadEquipTextures("IronManMk2");
             LoadEquipTextures("IronManMk3");
+            LoadEquipTextures("IronManMk4");
+            LoadEquipTextures("IronManMk5");
+            LoadEquipTextures("IronManMk6");
         }
 
         public override void SetStaticDefaults()
