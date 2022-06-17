@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
+using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
 namespace MarvelTerrariaUniverse.UI.Elements
@@ -95,53 +97,100 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             DescriptionTextContainer.Append(DescriptionText);
 
-            UIElement PositionButtonsContainer = new()
+            UIElement StatPanelsContainer = new()
+            {
+                Width = StyleDimension.FromPercent(0.92f),
+                Height = StyleDimension.FromPixels(67f),
+                HAlign = 0.5f
+            };
+
+            StatPanelsContainer.SetPadding(0f);
+
+            AddElementToList(StatPanelsContainer);
+
+            UIGrid StatPanelsGrid = new()
+            {
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPercent(1f),
+                ListPadding = 5f,
+            };
+
+            StatPanelsContainer.Append(StatPanelsGrid);
+
+            UIHoverImage StatPanel_SuitIntegrity = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_Defense"), "Suit Integrity");
+            StatPanelsGrid.Add(StatPanel_SuitIntegrity);
+
+            UIHoverImage StatPanel_SuitPower = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_HP"), "Suit Power");
+            StatPanelsGrid.Add(StatPanel_SuitPower);
+
+            UIHoverImage StatPanel_RepulsorDamage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/Stat_RepulsorDamage", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Repulsor Damage");
+            StatPanelsGrid.Add(StatPanel_RepulsorDamage);
+
+            UIHoverImage StatPanel_UnibeamDamage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/Stat_UnibeamDamage", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Unibeam Damage");
+            StatPanelsGrid.Add(StatPanel_UnibeamDamage);
+
+            foreach (var item in StatPanelsGrid._items)
+            {
+                UIText StatValue = new("99")
+                {
+                    HAlign = 0.93f,
+                    VAlign = 0.5f
+                };
+
+                item.Append(StatValue);
+            }
+
+            UIElement ChronologyButtonsContainer = new()
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPixels(28f)
             };
 
-            AddElementToList(PositionButtonsContainer);
+            AddElementToList(ChronologyButtonsContainer, false);
 
-            UIHoverImageButton PositionBackButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Back"), "Preceded by: Mk. II")
+            UIHoverImageButton ChronologyBackButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Back"), "Preceded by: Mk. II")
             {
                 HAlign = 0.05f
             };
 
-            PositionBackButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Border"));
-            PositionBackButton.SetVisibility(1f, 1f);
-            PositionBackButton.SetSnapPoint("BackPage", 0);
-            PositionButtonsContainer.Append(PositionBackButton);
+            ChronologyBackButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Border"));
+            ChronologyBackButton.SetVisibility(1f, 1f);
+            ChronologyBackButton.SetSnapPoint("BackPage", 0);
+            ChronologyButtonsContainer.Append(ChronologyBackButton);
 
-            UIText PositionText = new("Chronology")
+            UIText ChronologyText = new("Chronology")
             {
                 HAlign = 0.5f,
                 VAlign = 0.5f
             };
 
-            PositionButtonsContainer.Append(PositionText);
+            ChronologyButtonsContainer.Append(ChronologyText);
 
-            UIHoverImageButton PositionForwardButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Forward"), "Succeeded by: Mk. IV")
+            UIHoverImageButton ChronologyForwardButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Forward"), "Succeeded by: Mk. IV")
             {
                 HAlign = 0.95f
             };
 
-            PositionForwardButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Border"));
-            PositionForwardButton.SetVisibility(1f, 1f);
-            PositionForwardButton.SetSnapPoint("ForwardPage", 0);
-            PositionButtonsContainer.Append(PositionForwardButton);
+            ChronologyForwardButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Border"));
+            ChronologyForwardButton.SetVisibility(1f, 1f);
+            ChronologyForwardButton.SetSnapPoint("ForwardPage", 0);
+            ChronologyButtonsContainer.Append(ChronologyForwardButton);
         }
 
-        public void AddElementToList(UIElement element)
+        public void AddElementToList(UIElement element, bool DrawSeparator = true)
         {
-            UIHorizontalSeparator Separator = new()
-            {
-                Color = new Color(89, 116, 213, 255),
-                Width = StyleDimension.FromPercent(1f)
-            };
-
             ElementList.Add(element);
-            ElementList.Add(Separator);
+
+            if (DrawSeparator)
+            {
+                UIHorizontalSeparator Separator = new()
+                {
+                    Color = new Color(89, 116, 213, 255),
+                    Width = StyleDimension.FromPercent(1f)
+                };
+
+                ElementList.Add(Separator);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

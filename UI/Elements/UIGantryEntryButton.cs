@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace MarvelTerrariaUniverse.UI.Elements
@@ -19,20 +19,19 @@ namespace MarvelTerrariaUniverse.UI.Elements
         public UIText IndexText;
         public UIImage LockedIcon;
 
-        UICharacterEquipped Preview;
+        public UICharacterEquipped Preview;
 
         public string HoverText;
-        public string InternalName;
         public int Index;
+        public string InternalName;
 
         public bool Unlocked;
 
-        public UIGantryEntryButton(string hoverText, string internalName, int index, bool unlocked = false) : base()
+        public UIGantryEntryButton(string hoverText, int index, string internalName) : base()
         {
             HoverText = hoverText;
-            InternalName = internalName;
-            Unlocked = unlocked;
             Index = index;
+            InternalName = internalName;
 
             Height = StyleDimension.FromPixels(72f);
             Width = StyleDimension.FromPixels(72f);
@@ -86,10 +85,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             BorderDefault = PanelFront;
 
-            OnMouseOver += MouseOver;
-            OnMouseOut += MouseOut;
-
-            IndexText = new($"{Index + 1}")
+            IndexText = new($"{Index}")
             {
                 Left = StyleDimension.FromPixels(5f),
                 Top = StyleDimension.FromPixels(5f)
@@ -106,6 +102,9 @@ namespace MarvelTerrariaUniverse.UI.Elements
                 HAlign = 0.5f,
                 VAlign = 0.5f
             };
+
+            OnMouseOver += MouseOver;
+            OnMouseOut += MouseOut;
         }
 
         private void MouseOver(UIMouseEvent evt, UIElement listeningElement)
@@ -137,15 +136,12 @@ namespace MarvelTerrariaUniverse.UI.Elements
             {
                 IndexText.Remove();
                 ContentContainer.Append(LockedIcon);
-
                 Preview.Remove();
             }
             else
             {
                 ContentContainer.Append(IndexText);
                 LockedIcon.Remove();
-
-                Preview.Name = InternalName;
                 ContentContainer.Append(Preview);
             }
         }

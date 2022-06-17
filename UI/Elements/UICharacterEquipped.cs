@@ -16,6 +16,8 @@ namespace MarvelTerrariaUniverse.UI.Elements
         {
             DrawnPlayer = player;
             Name = name;
+
+            ChangeEquipTextures(Name);
         }
 
         readonly Mod Mod = ModContent.GetInstance<MarvelTerrariaUniverse>();
@@ -32,7 +34,6 @@ namespace MarvelTerrariaUniverse.UI.Elements
             Vector2 vector = dimensions.Position() + new Vector2(dimensions.Width * 0.5f - (DrawnPlayer.width >> 1), dimensions.Height * 0.5f - (DrawnPlayer.height >> 1));
 
             Main.PlayerRenderer.DrawPlayer(Main.Camera, DrawnPlayer, vector + Main.screenPosition, 0f, Vector2.Zero);
-
             ChangeEquipTextures(Name);
         }
     }
