@@ -1,18 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace MarvelTerrariaUniverse.UI.Elements
 {
-    public class UICharacterEquipped : UICharacter
+    public class UICharacterEquipped : UIElement
     {
         internal static Player DrawnPlayer;
         internal string Name;
 
-        public UICharacterEquipped(Player player, string name) : base(player)
+        public UICharacterEquipped(Player player, string name)
         {
             DrawnPlayer = player;
             Name = name;

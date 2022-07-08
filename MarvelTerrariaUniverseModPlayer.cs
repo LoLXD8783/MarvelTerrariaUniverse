@@ -1,6 +1,10 @@
+using MarvelTerrariaUniverse.Mounts;
 using MarvelTerrariaUniverse.Projectiles;
+using MarvelTerrariaUniverse.Tiles;
 using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,6 +15,36 @@ namespace MarvelTerrariaUniverse
 {
     public class MarvelTerrariaUniverseModPlayer : ModPlayer
     {
+        #region Glowmask Support
+
+        private static Dictionary<int, Func<Color>> BodyColor { get; set; }
+
+        /// <summary>
+        /// Add glowmask color associated with the body equip slot here, usually in <see cref="ModType.SetStaticDefaults"/>.
+        /// <para>Don't forget the !Main.dedServ check!</para>
+        /// </summary>
+        /// <param name="bodySlot">Body equip slot</param>
+        /// <param name="color">Color</param>
+        public static void RegisterData(int bodySlot, Func<Color> color)
+        {
+            if (!BodyColor.ContainsKey(bodySlot))
+            {
+                BodyColor.Add(bodySlot, color);
+            }
+        }
+
+        public override void Load()
+        {
+            BodyColor = new Dictionary<int, Func<Color>>();
+        }
+
+        public override void Unload()
+        {
+            BodyColor = null;
+        }
+
+        #endregion
+
         #region All transformations
 
         public bool TransformationActive => TransformationActive_IronMan;
@@ -18,7 +52,29 @@ namespace MarvelTerrariaUniverse
 
         public void UseEquipSlot(string texture)
         {
-            Player.head = EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{FaceplateFrameCount}", EquipType.Head);
+            if (texture.Contains("IronMan"))
+            {
+                if (texture == "IronManMk1") Player.head = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Head);
+                else
+                {
+                    Player.head = EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{FaceplateFrameCount}", EquipType.Head);
+
+                    if (!Main.dedServ)
+                    {
+                        if (FaceplateFrameCount < 3)
+                        {
+                            HeadLayer.RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{FaceplateFrameCount}", EquipType.Head), new DrawLayerData()
+                            {
+                                Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/Glowmasks/IronMan_Faceplate{FaceplateFrameCount}_Glowmask")
+                            });
+                        }
+
+                        RegisterData(EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body), () => new Color(255, 255, 255, 0));
+                    }
+                }
+            }
+            else Player.head = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Head);
+
             Player.body = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body);
             Player.legs = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Legs);
 
@@ -27,22 +83,42 @@ namespace MarvelTerrariaUniverse
 
         public void ResetEquipSlot()
         {
-            TransformationActive_IronManMk1 = false;
-            TransformationActive_IronManMk2 = false;
-            TransformationActive_IronManMk3 = false;
-            TransformationActive_IronManMk4 = false;
-            TransformationActive_IronManMk5 = false;
-            TransformationActive_IronManMk6 = false;
+            ResetSuits_IronMan();
+        }
+
+        public override void ResetEffects()
+        {
+            ModContent.GetInstance<GantryTile>().PlayGantryFrames = false;
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
         {
+            if (!BodyColor.TryGetValue(Player.body, out Func<Color> color))
+            {
+                return;
+            }
+
+            drawInfo.bodyGlowColor = color();
+            drawInfo.armGlowColor = color();
+
+            if (drawInfo.drawPlayer == UICharacterEquipped.DrawnPlayer)
+            {
+                drawInfo.colorArmorHead = Color.White;
+                drawInfo.colorArmorBody = Color.White;
+                drawInfo.colorArmorLegs = Color.White;
+            }
+
             ModifyDrawInfo_IronMan(ref drawInfo);
         }
 
         public override void FrameEffects()
         {
             FrameEffects_IronMan();
+        }
+
+        public override void PreUpdate()
+        {
+            PreUpdate_IronMan();
         }
 
         public override void PostUpdate()
@@ -61,9 +137,15 @@ namespace MarvelTerrariaUniverse
         }
 
         #endregion
+
         #region Transformation: Iron Man
 
         public bool GantryUIActive;
+
+        public float HeadRotation;
+        public float TargetHeadRotation;
+        public float BodyRotation;
+        public float TargetBodyRotation;
 
         public bool FaceplateOn = true;
         public bool FaceplateMoving = false;
@@ -73,9 +155,12 @@ namespace MarvelTerrariaUniverse
         public bool HelmetOn = true;
         public bool HelmetDropped = false;
 
+        public bool FlightToggled = false;
+        public bool Flying = false;
+
         public readonly List<string> IronManSuitTextures = new();
 
-        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3;
+        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6;
         public bool TransformationActive_IronManMk1;
         public bool TransformationActive_IronManMk2;
         public bool TransformationActive_IronManMk3;
@@ -83,11 +168,13 @@ namespace MarvelTerrariaUniverse
         public bool TransformationActive_IronManMk5;
         public bool TransformationActive_IronManMk6;
 
-        public void ResetSuits()
+        public void ResetSuits_IronMan()
         {
             FaceplateFrameCount = 0;
             FaceplateOn = true;
             HelmetOn = true;
+            FlightToggled = false;
+            Flying = false;
 
             TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
@@ -139,13 +226,23 @@ namespace MarvelTerrariaUniverse
             }
         }
 
+        public void FlightToggle()
+        {
+            if (FlightToggled)
+            {
+                Player.mount.SetMount(ModContent.MountType<IronManFlight>(), Player, Player.direction == -1);
+                Player.fullRotationOrigin = Player.Hitbox.Size() / 2;
+                Player.fullRotation = BodyRotation;
+            }
+            else Player.mount.Dismount(Player);
+        }
+
         public void ModifyDrawInfo_IronMan(ref PlayerDrawSet drawInfo)
         {
-            if (drawInfo.drawPlayer == UICharacterEquipped.DrawnPlayer)
+            if (TransformationActive_IronMan)
             {
-                drawInfo.colorArmorHead = Color.White;
-                drawInfo.colorArmorBody = Color.White;
-                drawInfo.colorArmorLegs = Color.White;
+                Player.direction = Main.MouseWorld.X >= Player.Center.X ? 1 : -1;
+                Player.headRotation = HeadRotation;
             }
         }
 
@@ -159,18 +256,48 @@ namespace MarvelTerrariaUniverse
             if (TransformationActive_IronManMk6) UseEquipSlot("IronManMk6");
         }
 
+        public void PreUpdate_IronMan()
+        {
+            if (Player.sleeping.isSleeping)
+            {
+                TargetBodyRotation = 0;
+                TargetHeadRotation = 0;
+            }
+            else
+            {
+                Vector2 offset = Player.velocity;
+
+                if (Math.Sign(offset.X) == Player.direction)
+                {
+                    TargetBodyRotation = (offset * Player.direction).ToRotation() * 0.55f + MathHelper.PiOver2 * Player.direction;
+                    TargetHeadRotation = (offset * Player.direction).ToRotation() * 0.55f;
+                }
+                else
+                {
+                    TargetBodyRotation = 0;
+                    TargetHeadRotation = 0;
+                }
+            }
+
+            BodyRotation = MathHelper.Lerp(BodyRotation, TargetBodyRotation, 16f * (1f / 60));
+            HeadRotation = MathHelper.Lerp(HeadRotation, TargetHeadRotation, 16f * (1f / 60));
+        }
+
         public void PostUpdate_IronMan()
         {
             if (TransformationActive_IronMan) Main.playerInventory = false;
 
             FaceplateToggle();
             HelmetToggle();
+            FlightToggle();
         }
 
         public void SetControls_IronMan()
         {
             if (TransformationActive_IronMan || GantryUIActive)
             {
+                if (Flying) Player.controlJump = false;
+
                 Player.controlCreativeMenu = false;
                 Player.controlHook = false;
                 Player.controlInv = false;
@@ -187,8 +314,9 @@ namespace MarvelTerrariaUniverse
         {
             if (TransformationActive_IronMan)
             {
-                if (Keybinds.IronMan_ToggleFaceplate.JustPressed) FaceplateMoving = true;
+                if (Keybinds.IronMan_ToggleFaceplate.JustPressed && HelmetOn) if (!TransformationActive_IronManMk1) FaceplateMoving = true;
                 if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
+                if (Keybinds.IronMan_ToggleFlight.JustPressed) FlightToggled = !FlightToggled;
             }
         }
 

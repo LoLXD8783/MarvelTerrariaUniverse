@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -16,9 +18,12 @@ namespace MarvelTerrariaUniverse.Tiles
             EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Body", EquipType.Body, name: texture);
             EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Legs", EquipType.Legs, name: texture);
 
-            for (int i = 0; i < 6; i++)
+            if (texture != "IronManMk1")
             {
-                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
+                for (int i = 0; i < 6; i++)
+                {
+                    EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
+                }
             }
 
             ModContent.GetInstance<MarvelTerrariaUniverseModPlayer>().IronManSuitTextures.Add(texture);
@@ -34,10 +39,13 @@ namespace MarvelTerrariaUniverse.Tiles
                 int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
                 int legs = EquipLoader.GetEquipSlot(Mod, item, EquipType.Legs);
 
-                for (int i = 0; i < 6; i++)
+                if (item != "IronManMk1")
                 {
-                    int faceplate = EquipLoader.GetEquipSlot(Mod, $"{item}_Faceplate{i}", EquipType.Head);
-                    ArmorIDs.Head.Sets.DrawBackHair[faceplate] = false;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        int faceplate = EquipLoader.GetEquipSlot(Mod, $"{item}_Faceplate{i}", EquipType.Head);
+                        ArmorIDs.Head.Sets.DrawBackHair[faceplate] = false;
+                    }
                 }
 
                 ArmorIDs.Head.Sets.DrawBackHair[head] = false;
@@ -62,6 +70,7 @@ namespace MarvelTerrariaUniverse.Tiles
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Gantry");
+            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
 
             SetupDrawing();
         }
@@ -86,16 +95,16 @@ namespace MarvelTerrariaUniverse.Tiles
     {
         public override void SetStaticDefaults()
         {
-            Main.tileSolid[Type] = false;
+            Main.tileSolid[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileMergeDirt[Type] = false;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.Width = 7;
-            TileObjectData.newTile.Height = 5;
-            TileObjectData.newTile.Origin = new Point16(3, 4);
+            TileObjectData.newTile.Width = 4;
+            TileObjectData.newTile.Height = 1;
+            TileObjectData.newTile.Origin = new Point16(2, 0);
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16, 16, 16 };
+            TileObjectData.newTile.CoordinateHeights = new[] { 16 };
             TileObjectData.addTile(Type);
             Main.placementPreview = true;
             AddMapEntry(new Color(0, 0, 127));
@@ -103,10 +112,66 @@ namespace MarvelTerrariaUniverse.Tiles
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            WorldGen.KillTile(i, j);
-            WorldGen.PlaceTile(i, j, ModContent.TileType<GantryTileBase>(), true, true);
-            WorldGen.SlopeTile(i - 2, j, 2);
-            WorldGen.SlopeTile(i + 2, j, 1);
+            WorldGen.PoundTile(i - 2, j);
+            WorldGen.PoundTile(i - 1, j);
+            WorldGen.PoundTile(i, j);
+            WorldGen.PoundTile(i + 1, j);
+        }
+
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        {
+            Item.NewItem(Main.LocalPlayer.GetSource_TileInteraction(i, j), i * 16, j * 16, 32, 16, ModContent.ItemType<GantryTileItem>());
+        }
+
+        public override bool Slope(int i, int j) => false;
+
+        public bool PlayGantryFrames;
+        public int GantryFrame = 0;
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            return false;
+        }
+
+        int Timer = 0;
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+
+            Timer++;
+
+            if (Timer > 3)
+            {
+                if (PlayGantryFrames)
+                {
+                    if (GantryFrame < 46) GantryFrame++;
+                }
+                else
+                {
+                    if (GantryFrame > 0) GantryFrame--;
+                }
+
+                Timer = 0;
+            }
+
+            if (Framing.GetTileSafely(i - 2, j).BlockType != BlockType.Solid && Framing.GetTileSafely(i + 1, j).BlockType != BlockType.Solid)
+            {
+                spriteBatch.Draw(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/Tiles/GantryFrames").Value, new Vector2(i * 16 - (int)Main.screenPosition.X - 48, j * 16 - (int)Main.screenPosition.Y - 52) + zero, new Rectangle(0, 68 * GantryFrame, 96, 68), Color.White);
+            }
+        }
+
+        public override void FloorVisuals(Player player)
+        {
+            PlayGantryFrames = true;
+        }
+
+        public override bool RightClick(int i, int j)
+        {
+            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+
+            if (ModPlayer.TransformationActive_IronMan) Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().ResetSuits_IronMan();
+            else ModPlayer.GantryUIActive = true;
+
+            return true;
         }
     }
 }

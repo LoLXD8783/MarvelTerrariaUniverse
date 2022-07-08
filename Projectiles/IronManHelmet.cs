@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -8,15 +9,11 @@ namespace MarvelTerrariaUniverse.Projectiles
 {
     public class IronManHelmet : ModProjectile
     {
-        public string TexturePath = "MarvelTerrariaUniverse/TransformationTextures/IronManMk3/IronManMk3_Helmet";
-
-        public override string Texture => TexturePath;
+        public override string Texture => "MarvelTerrariaUniverse/TransformationTextures/EmptyPixel";
 
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Helmet");
-
-            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -28,14 +25,8 @@ namespace MarvelTerrariaUniverse.Projectiles
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            if (Projectile.velocity.X != oldVelocity.X && Math.Abs(oldVelocity.X) > 1f)
-            {
-                Projectile.velocity.X = oldVelocity.X * -0.3f;
-            }
-            if (Projectile.velocity.Y != oldVelocity.Y && Math.Abs(oldVelocity.Y) > 1f)
-            {
-                Projectile.velocity.Y = oldVelocity.Y * -0.3f;
-            }
+            if (Projectile.velocity.X != oldVelocity.X && Math.Abs(oldVelocity.X) > 1f) Projectile.velocity.X = oldVelocity.X * -0.3f;
+            if (Projectile.velocity.Y != oldVelocity.Y && Math.Abs(oldVelocity.Y) > 1f) Projectile.velocity.Y = oldVelocity.Y * -0.3f;
 
             return false;
         }
@@ -43,8 +34,6 @@ namespace MarvelTerrariaUniverse.Projectiles
         public override void AI()
         {
             MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
-
-            if (!Main.gameMenu) TexturePath = $"MarvelTerrariaUniverse/TransformationTextures/{ModPlayer.ActiveTransformation}/Helmet/{ModPlayer.ActiveTransformation}_Helmet";
 
             Projectile.velocity.Y += 0.1f;
             if (Projectile.velocity.Y > 16f)
@@ -64,8 +53,6 @@ namespace MarvelTerrariaUniverse.Projectiles
             Projectile.velocity.X = Projectile.velocity.X * 0.97f;
             Projectile.rotation += Projectile.velocity.X * 0.1f;
 
-            Projectile.frame = ModPlayer.FaceplateOn ? 0 : 1;
-
             if (!ModPlayer.TransformationActive_IronMan)
             {
                 for (int i = 0; i < 10; i++)
@@ -76,6 +63,15 @@ namespace MarvelTerrariaUniverse.Projectiles
                 Projectile.Kill();
                 ModPlayer.HelmetDropped = false;
             }
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+            Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/{ModPlayer.ActiveTransformation}/{ModPlayer.ActiveTransformation}_Helmet").Value;
+            int HelmetFrame = (!ModPlayer.TransformationActive_IronManMk1 && ModPlayer.FaceplateOn) || ModPlayer.TransformationActive_IronManMk1 ? 0 : 1;
+
+            Main.EntitySpriteDraw(Texture, Projectile.Center, new Rectangle(0, 20 * HelmetFrame, 18, ModPlayer.TransformationActive_IronManMk1 ? 18 : 20), Color.White, Projectile.rotation, Projectile.Center, 1f, SpriteEffects.None, 0);
         }
     }
 }

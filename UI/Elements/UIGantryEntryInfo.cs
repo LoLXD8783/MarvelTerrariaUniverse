@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
@@ -18,6 +17,8 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
         public UIGantryEntryInfo()
         {
+            #region General Elements
+
             ElementList = new()
             {
                 Width = StyleDimension.FromPercent(1f),
@@ -38,12 +39,20 @@ namespace MarvelTerrariaUniverse.UI.Elements
             ElementList.SetScrollbar(ListScrollbar);
             ElementList.ListPadding = 10;
 
+            #endregion
+
+            #region Title
+
             UIText TitleText = new("Iron Man Mk. III")
             {
                 HAlign = 0.5f,
             };
 
             AddElementToList(TitleText);
+
+            #endregion
+
+            #region Preview
 
             UIElement PreviewPanelContentContainer = new()
             {
@@ -77,6 +86,10 @@ namespace MarvelTerrariaUniverse.UI.Elements
                 Height = StyleDimension.FromPercent(1f),
             });
 
+            #endregion
+
+            #region Description
+
             DescriptionTextContainer = new()
             {
                 Width = StyleDimension.FromPercent(0.94f),
@@ -97,10 +110,14 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             DescriptionTextContainer.Append(DescriptionText);
 
+            #endregion
+
+            #region Stat Panels
+
             UIElement StatPanelsContainer = new()
             {
                 Width = StyleDimension.FromPercent(0.92f),
-                Height = StyleDimension.FromPixels(67f),
+                Height = StyleDimension.FromPixels(103f),
                 HAlign = 0.5f
             };
 
@@ -129,6 +146,9 @@ namespace MarvelTerrariaUniverse.UI.Elements
             UIHoverImage StatPanel_UnibeamDamage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/Stat_UnibeamDamage", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Unibeam Damage");
             StatPanelsGrid.Add(StatPanel_UnibeamDamage);
 
+            UIHoverImage StatPanel_FlightPower = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/Stat_FlightPower", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Flight Power");
+            StatPanelsGrid.Add(StatPanel_FlightPower);
+
             foreach (var item in StatPanelsGrid._items)
             {
                 UIText StatValue = new("99")
@@ -139,6 +159,10 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
                 item.Append(StatValue);
             }
+
+            #endregion
+
+            #region Chronology
 
             UIElement ChronologyButtonsContainer = new()
             {
@@ -175,6 +199,8 @@ namespace MarvelTerrariaUniverse.UI.Elements
             ChronologyForwardButton.SetVisibility(1f, 1f);
             ChronologyForwardButton.SetSnapPoint("ForwardPage", 0);
             ChronologyButtonsContainer.Append(ChronologyForwardButton);
+
+            #endregion
         }
 
         public void AddElementToList(UIElement element, bool DrawSeparator = true)
