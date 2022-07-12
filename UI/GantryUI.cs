@@ -16,7 +16,7 @@ namespace MarvelTerrariaUniverse.UI
 {
     public class GantryUI : UIState
     {
-        public static bool Visible => Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive;
+        public static bool Visible => Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive;
 
         private UISearchBar SearchBar;
         private UIPanel SearchBarPanel;
@@ -204,7 +204,7 @@ namespace MarvelTerrariaUniverse.UI
         private static void ExitUI()
         {
             SoundEngine.PlaySound(SoundID.MenuClose);
-            Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive = false;
+            Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive = false;
         }
 
         private void FadedMouseOver(UIMouseEvent evt, UIElement listeningElement)

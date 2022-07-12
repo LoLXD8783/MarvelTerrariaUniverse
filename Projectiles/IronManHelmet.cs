@@ -33,7 +33,7 @@ namespace MarvelTerrariaUniverse.Projectiles
 
         public override void AI()
         {
-            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
 
             Projectile.velocity.Y += 0.1f;
             if (Projectile.velocity.Y > 16f)
@@ -67,11 +67,13 @@ namespace MarvelTerrariaUniverse.Projectiles
 
         public override void PostDraw(Color lightColor)
         {
-            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
-            Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/{ModPlayer.ActiveTransformation}/{ModPlayer.ActiveTransformation}_Helmet").Value;
-            int HelmetFrame = (!ModPlayer.TransformationActive_IronManMk1 && ModPlayer.FaceplateOn) || ModPlayer.TransformationActive_IronManMk1 ? 0 : 1;
+            IronManModPlayer IronManModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
+            MTUModPlayer MTUModPlayer = Main.LocalPlayer.GetModPlayer<MTUModPlayer>();
 
-            Main.EntitySpriteDraw(Texture, Projectile.Center, new Rectangle(0, 20 * HelmetFrame, 18, ModPlayer.TransformationActive_IronManMk1 ? 18 : 20), Color.White, Projectile.rotation, Projectile.Center, 1f, SpriteEffects.None, 0);
+            Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/{MTUModPlayer.ActiveTransformation}/{MTUModPlayer.ActiveTransformation}_Helmet").Value;
+            int HelmetFrame = (!IronManModPlayer.TransformationActive_IronManMk1 && IronManModPlayer.FaceplateOn) || IronManModPlayer.TransformationActive_IronManMk1 ? 0 : 1;
+
+            Main.EntitySpriteDraw(Texture, Projectile.Center, new Rectangle(0, 20 * HelmetFrame, 18, IronManModPlayer.TransformationActive_IronManMk1 ? 18 : 20), Color.White, Projectile.rotation, Projectile.Center, 1f, SpriteEffects.None, 0);
         }
     }
 }

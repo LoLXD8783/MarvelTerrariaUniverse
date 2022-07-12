@@ -10,6 +10,8 @@ namespace MarvelTerrariaUniverse.UI.Elements
 {
     public class UIGantryEntryButton : UIElement
     {
+        public bool Initialized = false;
+
         public readonly UIImage BorderGlow;
         public readonly UIImage BorderOverlay;
         public readonly UIImage BorderDefault;
@@ -92,12 +94,6 @@ namespace MarvelTerrariaUniverse.UI.Elements
                 VAlign = 0.5f
             };
 
-            Preview = new(new(), $"IronManMk{Index}")
-            {
-                HAlign = 0.5f,
-                VAlign = 0.5f
-            };
-
             OnMouseOver += MouseOver;
             OnMouseOut += MouseOut;
             OnClick += UIGantryEntryButton_OnClick;
@@ -105,9 +101,11 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
         private void UIGantryEntryButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
         {
-            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+            if (!(listeningElement as UIGantryEntryButton).Unlocked) return;
 
-            ModPlayer.ResetEquipSlot();
+            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
+
+            Main.LocalPlayer.GetModPlayer<MTUModPlayer>().ResetEquipSlot();
             switch (Index)
             {
                 case 1:
@@ -155,6 +153,17 @@ namespace MarvelTerrariaUniverse.UI.Elements
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             base.DrawSelf(spriteBatch);
+
+            if (!Initialized)
+            {
+                Preview = new(new(), $"IronManMk{Index}")
+                {
+                    HAlign = 0.5f,
+                    VAlign = 0.5f
+                };
+
+                Initialized = true;
+            }
 
             if (IsMouseHovering) Main.hoverItemName = Unlocked ? $"Iron Man Mk. {ToRoman(Index)}" : "???";
 

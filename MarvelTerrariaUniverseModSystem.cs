@@ -67,7 +67,7 @@ namespace MarvelTerrariaUniverse
 
             if (!Main.gameMenu)
             {
-                if (Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().TransformationActive_IronMan || Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().GantryUIActive)
+                if (Main.LocalPlayer.GetModPlayer<IronManModPlayer>().TransformationActive_IronMan || Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive)
                 {
                     layers.Remove(hotbarLayer);
                     layers.Remove(barsLayer);

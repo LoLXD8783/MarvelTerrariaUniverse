@@ -26,14 +26,14 @@ namespace MarvelTerrariaUniverse.Tiles
                 }
             }
 
-            ModContent.GetInstance<MarvelTerrariaUniverseModPlayer>().IronManSuitTextures.Add(texture);
+            ModContent.GetInstance<IronManModPlayer>().IronManSuitTextures.Add(texture);
         }
 
         private void SetupDrawing()
         {
             if (Main.netMode == NetmodeID.Server) return;
 
-            foreach (string item in ModContent.GetInstance<MarvelTerrariaUniverseModPlayer>().IronManSuitTextures)
+            foreach (string item in ModContent.GetInstance<IronManModPlayer>().IronManSuitTextures)
             {
                 int head = EquipLoader.GetEquipSlot(Mod, item, EquipType.Head);
                 int body = EquipLoader.GetEquipSlot(Mod, item, EquipType.Body);
@@ -166,9 +166,9 @@ namespace MarvelTerrariaUniverse.Tiles
 
         public override bool RightClick(int i, int j)
         {
-            MarvelTerrariaUniverseModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>();
+            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
 
-            if (ModPlayer.TransformationActive_IronMan) Main.LocalPlayer.GetModPlayer<MarvelTerrariaUniverseModPlayer>().ResetSuits_IronMan();
+            if (ModPlayer.TransformationActive_IronMan) Main.LocalPlayer.GetModPlayer<IronManModPlayer>().ResetSuits_IronMan();
             else ModPlayer.GantryUIActive = true;
 
             return true;
