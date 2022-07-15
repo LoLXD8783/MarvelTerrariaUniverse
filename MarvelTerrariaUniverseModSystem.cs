@@ -65,17 +65,25 @@ namespace MarvelTerrariaUniverse
             int barsIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Resource Bars"));
             GameInterfaceLayer barsLayer = layers[barsIndex];
 
+            List<GameInterfaceLayer> moddedLayers = layers.FindAll(layer => !layer.Name.Contains("Vanilla:") && !layer.Name.Contains("MarvelTerrariaUniverse: "));
+
             if (!Main.gameMenu)
             {
                 if (Main.LocalPlayer.GetModPlayer<IronManModPlayer>().TransformationActive_IronMan || Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive)
                 {
                     layers.Remove(hotbarLayer);
                     layers.Remove(barsLayer);
+                    Main.mapEnabled = false;
+
+                    moddedLayers.ForEach(layer => layers.Remove(layer));
                 }
                 else
                 {
                     layers.Insert(hotbarIndex, hotbarLayer);
                     layers.Insert(barsIndex, barsLayer);
+                    Main.mapEnabled = true;
+
+                    moddedLayers.ForEach(layer => layers.Insert(moddedLayers.IndexOf(layer), layer));
                 }
             }
         }

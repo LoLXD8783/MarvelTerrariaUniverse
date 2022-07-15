@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -59,9 +60,22 @@ namespace MarvelTerrariaUniverse.Mounts
 
         public override void SetMount(Player player, ref bool skipDust)
         {
-            // skipDust = true;
+            skipDust = true;
+        }
 
-            if (player.velocity.Y == 0) player.velocity.Y -= 4f;
+        public override void Dismount(Player player, ref bool skipDust)
+        {
+            skipDust = true;
+        }
+
+        public override void UpdateEffects(Player player)
+        {
+            /*for (int i = 0; i < 2; i++)
+            {
+                Dust dust = Dust.NewDustDirect(new Vector2(player.Center.X + (i == 0 ? 0f : -10f), player.Center.Y) + Vector2.UnitX.RotatedBy(player.fullRotation + MathHelper.PiOver2) * player.height / 2, 8, 8, DustID.Torch, Scale: 2.5f);
+                dust.noGravity = true;
+                dust.velocity += new Vector2(-0.5f - player.velocity.X * 0.3f, 2f * player.gravDir - player.velocity.Y * 0.3f);
+            }*/
         }
     }
 }

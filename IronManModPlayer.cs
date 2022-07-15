@@ -16,11 +16,8 @@ namespace MarvelTerrariaUniverse
 
         public bool GantryUIActive;
 
-        //public float HeadRotation;
-        //public float TargetHeadRotation;
-        public float BodyRotation;
-        public float TargetBodyRotation;
-        public float BodyRotationStrength => (!Flying || (Flying && Hovering)) ? 4f : 16f;
+        public float HeadRotation;
+        public float TargetHeadRotation;
 
         public bool FaceplateOn = true;
         public bool FaceplateMoving = false;
@@ -33,6 +30,10 @@ namespace MarvelTerrariaUniverse
         public bool FlightToggled = false;
         public bool Flying = false;
         public bool Hovering => Flying && !Player.controlUp && !Player.controlDown && !Player.controlLeft && !Player.controlRight;
+
+        public Color FlameColor = Color.Yellow;
+        public int FlameFrameCount = 0;
+        public int FlameFrameTimer = 0;
 
         public readonly List<string> IronManSuitTextures = new();
 
@@ -51,6 +52,7 @@ namespace MarvelTerrariaUniverse
             HelmetOn = true;
             FlightToggled = false;
             Flying = false;
+            FlameFrameCount = 0;
 
             TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
@@ -107,27 +109,34 @@ namespace MarvelTerrariaUniverse
             if (FlightToggled)
             {
                 Flying = true;
-
                 Player.mount.SetMount(ModContent.MountType<IronManFlight>(), Player, Player.direction == -1);
-                Player.fullRotationOrigin = Player.Hitbox.Size() / 2;
-                Player.fullRotation = BodyRotation;
+
+                if (FlameFrameCount < 2)
+                {
+                    FlameFrameTimer++;
+
+                    if (FlameFrameTimer > 15)
+                    {
+                        FlameFrameCount++;
+                        FlameFrameTimer = 0;
+                    }
+                }
             }
             else
             {
-                Flying = false;
-
-                Player.mount.Dismount(Player);
-            }
-        }
-
-        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
-        {
-            if (TransformationActive_IronMan)
-            {
-                if ((Flying && Hovering) || !Flying)
+                if (FlameFrameCount > 0)
                 {
-                    // Player.direction = Math.Sign((Main.MouseWorld - Player.Center).X);
+                    FlameFrameTimer++;
+
+                    if (FlameFrameTimer > 15)
+                    {
+                        FlameFrameCount--;
+                        FlameFrameTimer = 0;
+                    }
                 }
+
+                Flying = false;
+                Player.mount.Dismount(Player);
             }
         }
 
@@ -143,16 +152,21 @@ namespace MarvelTerrariaUniverse
 
         public override void PreUpdate()
         {
-            if ((Flying && Hovering) || !Flying)
-            {
-                TargetBodyRotation = 0;
-            }
+            Vector2 Offset = Main.MouseWorld - Player.Center;
+
+            if (Player.sleeping.isSleeping) TargetHeadRotation = 0;
             else
             {
-                TargetBodyRotation = (Player.velocity * Player.direction).ToRotation() * 0.55f + (MathHelper.PiOver2 * Player.direction);
+                if (Flying && !Hovering) TargetHeadRotation = 0.8f * -Player.direction;
+                else
+                {
+                    Player.direction = Math.Sign(Offset.X);
+                    if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
+                    else TargetHeadRotation = 0;
+                }
             }
 
-            BodyRotation = MathHelper.Lerp(BodyRotation, TargetBodyRotation, BodyRotationStrength * (1f / 60));
+            HeadRotation = MathHelper.Lerp(HeadRotation, TargetHeadRotation, 16f * (1f / 60));
         }
 
         public override void PostUpdate()
@@ -160,13 +174,27 @@ namespace MarvelTerrariaUniverse
             if (TransformationActive_IronMan)
             {
                 Main.playerInventory = false;
-                Main.mapEnabled = false;
+
+                if (Flying) Player.legFrame.Y = 0 * Player.legFrame.Height;
             }
-            else Main.mapEnabled = true;
 
             FaceplateToggle();
             HelmetToggle();
             FlightToggle();
+        }
+
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            Player drawPlayer = drawInfo.drawPlayer;
+            drawInfo.rotationOrigin = drawPlayer.Hitbox.Size() / 2f;
+
+            drawPlayer.headRotation = HeadRotation;
+
+            if (Flying)
+            {
+                if (!Hovering) drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(drawPlayer.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
+                else drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(0f, 0.1f);
+            }
         }
 
         public override void SetControls()
@@ -188,7 +216,7 @@ namespace MarvelTerrariaUniverse
         {
             if (TransformationActive_IronMan)
             {
-                if (Keybinds.IronMan_ToggleFaceplate.JustPressed && HelmetOn) if (!TransformationActive_IronManMk1) FaceplateMoving = true;
+                if (Keybinds.IronMan_ToggleFaceplate.JustPressed && HelmetOn) FaceplateMoving = true;
                 if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
                 if (Keybinds.IronMan_ToggleFlight.JustPressed) FlightToggled = !FlightToggled;
             }

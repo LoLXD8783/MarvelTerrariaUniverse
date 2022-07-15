@@ -102,5 +102,20 @@ namespace MarvelTerrariaUniverse
                 drawInfo.colorArmorLegs = Color.White;
             }
         }
+
+        public Vector2 InputVector()
+        {
+            Vector2 InputVector = Vector2.Zero;
+
+            if (Player.controlUp) InputVector.Y = -1;
+            if (Player.controlDown) InputVector.Y = 1;
+            if (Player.controlRight) InputVector.X = 1;
+            if (Player.controlLeft) InputVector.X = -1;
+
+            if (Player.controlUp && Player.controlDown) InputVector.Y = 0;
+            if (Player.controlLeft && Player.controlRight) InputVector.X = 0;
+
+            return InputVector;
+        }
     }
 }

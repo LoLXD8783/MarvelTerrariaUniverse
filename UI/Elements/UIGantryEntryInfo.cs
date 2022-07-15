@@ -134,10 +134,10 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             StatPanelsContainer.Append(StatPanelsGrid);
 
-            UIHoverImage StatPanel_SuitIntegrity = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_Defense"), "Suit Integrity");
+            UIHoverImage StatPanel_SuitIntegrity = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_Defense", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Suit Integrity");
             StatPanelsGrid.Add(StatPanel_SuitIntegrity);
 
-            UIHoverImage StatPanel_SuitPower = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_HP"), "Suit Power");
+            UIHoverImage StatPanel_SuitPower = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_HP", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Suit Power");
             StatPanelsGrid.Add(StatPanel_SuitPower);
 
             UIHoverImage StatPanel_RepulsorDamage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/Stat_RepulsorDamage", ReLogic.Content.AssetRequestMode.ImmediateLoad), "Repulsor Damage");
