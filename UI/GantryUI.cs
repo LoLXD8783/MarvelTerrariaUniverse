@@ -177,12 +177,12 @@ namespace MarvelTerrariaUniverse.UI
 
             SuitSelectionGridContainer.Append(SuitButtonGrid);
 
-            for (int i = 1; i <= 7; i++)
+            for (int i = 1; i <= 6; i++)
             {
-                UIGantryEntryButton SuitButton = new(i);
+                UIGantryEntryButton SuitButton = new(i + 1);
                 SuitButtonGrid.Add(SuitButton);
 
-                if (i < 7) SuitButton.Unlocked = true;
+                SuitButton.Unlocked = true;
             }
 
             #endregion

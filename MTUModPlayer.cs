@@ -55,6 +55,8 @@ namespace MarvelTerrariaUniverse
                 else
                 {
                     Player.head = EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{IronManModPlayer.FaceplateFrameCount}", EquipType.Head);
+                    Player.body = EquipLoader.GetEquipSlot(Mod, IronManModPlayer.Flying ? $"{texture}_Body_Flight" : texture, EquipType.Body);
+                    Player.legs = EquipLoader.GetEquipSlot(Mod, IronManModPlayer.Flying && IronManModPlayer.Hovering ? $"{texture}_Legs_Hover" : texture, EquipType.Legs);
 
                     if (!Main.dedServ)
                     {
@@ -67,13 +69,16 @@ namespace MarvelTerrariaUniverse
                         }
 
                         RegisterData(EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body), () => new Color(255, 255, 255, 0));
+                        RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Body_Flight", EquipType.Body), () => new Color(255, 255, 255, 0));
                     }
                 }
             }
-            else Player.head = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Head);
-
-            Player.body = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body);
-            Player.legs = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Legs);
+            else
+            {
+                Player.head = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Head);
+                Player.body = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body);
+                Player.legs = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Legs);
+            }
 
             ActiveTransformation = texture;
         }
@@ -101,21 +106,6 @@ namespace MarvelTerrariaUniverse
                 drawInfo.colorArmorBody = Color.White;
                 drawInfo.colorArmorLegs = Color.White;
             }
-        }
-
-        public Vector2 InputVector()
-        {
-            Vector2 InputVector = Vector2.Zero;
-
-            if (Player.controlUp) InputVector.Y = -1;
-            if (Player.controlDown) InputVector.Y = 1;
-            if (Player.controlRight) InputVector.X = 1;
-            if (Player.controlLeft) InputVector.X = -1;
-
-            if (Player.controlUp && Player.controlDown) InputVector.Y = 0;
-            if (Player.controlLeft && Player.controlRight) InputVector.X = 0;
-
-            return InputVector;
         }
     }
 }

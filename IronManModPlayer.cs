@@ -31,19 +31,19 @@ namespace MarvelTerrariaUniverse
         public bool Flying = false;
         public bool Hovering => Flying && !Player.controlUp && !Player.controlDown && !Player.controlLeft && !Player.controlRight;
 
-        public Color FlameColor = Color.Yellow;
         public int FlameFrameCount = 0;
         public int FlameFrameTimer = 0;
 
         public readonly List<string> IronManSuitTextures = new();
 
-        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6;
+        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6 || TransformationActive_IronManMk7;
         public bool TransformationActive_IronManMk1;
         public bool TransformationActive_IronManMk2;
         public bool TransformationActive_IronManMk3;
         public bool TransformationActive_IronManMk4;
         public bool TransformationActive_IronManMk5;
         public bool TransformationActive_IronManMk6;
+        public bool TransformationActive_IronManMk7;
 
         public void ResetSuits_IronMan()
         {
@@ -60,6 +60,7 @@ namespace MarvelTerrariaUniverse
             TransformationActive_IronManMk4 = false;
             TransformationActive_IronManMk5 = false;
             TransformationActive_IronManMk6 = false;
+            TransformationActive_IronManMk7 = false;
         }
 
         public void FaceplateToggle()
@@ -115,7 +116,7 @@ namespace MarvelTerrariaUniverse
                 {
                     FlameFrameTimer++;
 
-                    if (FlameFrameTimer > 15)
+                    if (FlameFrameTimer > 5)
                     {
                         FlameFrameCount++;
                         FlameFrameTimer = 0;
@@ -128,7 +129,7 @@ namespace MarvelTerrariaUniverse
                 {
                     FlameFrameTimer++;
 
-                    if (FlameFrameTimer > 15)
+                    if (FlameFrameTimer > 5)
                     {
                         FlameFrameCount--;
                         FlameFrameTimer = 0;
@@ -148,25 +149,38 @@ namespace MarvelTerrariaUniverse
             if (TransformationActive_IronManMk4) MTUModPlayer.UseEquipSlot("IronManMk4");
             if (TransformationActive_IronManMk5) MTUModPlayer.UseEquipSlot("IronManMk5");
             if (TransformationActive_IronManMk6) MTUModPlayer.UseEquipSlot("IronManMk6");
+            if (TransformationActive_IronManMk7) MTUModPlayer.UseEquipSlot("IronManMk7");
         }
 
         public override void PreUpdate()
         {
-            Vector2 Offset = Main.MouseWorld - Player.Center;
-
-            if (Player.sleeping.isSleeping) TargetHeadRotation = 0;
-            else
+            if (TransformationActive_IronMan)
             {
-                if (Flying && !Hovering) TargetHeadRotation = 0.8f * -Player.direction;
+                Vector2 Offset = Main.MouseWorld - Player.Center;
+
+                if (Player.sleeping.isSleeping) TargetHeadRotation = 0;
                 else
                 {
-                    Player.direction = Math.Sign(Offset.X);
-                    if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
-                    else TargetHeadRotation = 0;
-                }
-            }
+                    if (Flying)
+                    {
+                        if (!Hovering) TargetHeadRotation = 0.8f * -Player.direction;
+                        else
+                        {
+                            Player.direction = Math.Sign(Offset.X);
 
-            HeadRotation = MathHelper.Lerp(HeadRotation, TargetHeadRotation, 16f * (1f / 60));
+                            if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
+                        }
+                    }
+                    else
+                    {
+                        Player.direction = Math.Sign(Offset.X);
+                        if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
+                        else TargetHeadRotation = 0;
+                    }
+                }
+
+                HeadRotation = MathHelper.Lerp(HeadRotation, TargetHeadRotation, 16f * (1f / 60));
+            }
         }
 
         public override void PostUpdate()
@@ -175,7 +189,20 @@ namespace MarvelTerrariaUniverse
             {
                 Main.playerInventory = false;
 
-                if (Flying) Player.legFrame.Y = 0 * Player.legFrame.Height;
+                if (Flying)
+                {
+                    Player.legFrame.Y = 0 * Player.legFrame.Height;
+
+                    FlameFrameTimer++;
+
+                    if (FlameFrameTimer > 5)
+                    {
+                        if (FlameFrameCount >= (Hovering ? 1 : 2)) FlameFrameCount = 0;
+                        else FlameFrameCount++;
+
+                        FlameFrameTimer = 0;
+                    }
+                }
             }
 
             FaceplateToggle();
@@ -188,12 +215,15 @@ namespace MarvelTerrariaUniverse
             Player drawPlayer = drawInfo.drawPlayer;
             drawInfo.rotationOrigin = drawPlayer.Hitbox.Size() / 2f;
 
-            drawPlayer.headRotation = HeadRotation;
-
-            if (Flying)
+            if (TransformationActive_IronMan)
             {
-                if (!Hovering) drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(drawPlayer.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
-                else drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(0f, 0.1f);
+                if (Flying)
+                {
+                    if (Hovering) drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(((Main.MouseWorld - Player.Center) * Player.direction).ToRotation() * 0.55f, 0.1f);
+                    else drawPlayer.fullRotation = drawPlayer.fullRotation.AngleLerp(drawPlayer.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
+                }
+
+                drawPlayer.headRotation = HeadRotation;
             }
         }
 
@@ -210,6 +240,8 @@ namespace MarvelTerrariaUniverse
                 Player.controlUseItem = false;
                 // Player.controlUseTile = false;
             }
+
+            if (TransformationActive_IronMan && Flying) Player.controlJump = false;
         }
 
         public override void ProcessTriggers(TriggersSet triggersSet)

@@ -126,6 +126,9 @@ namespace MarvelTerrariaUniverse.UI.Elements
                 case 6:
                     ModPlayer.TransformationActive_IronManMk6 = true;
                     break;
+                case 7:
+                    ModPlayer.TransformationActive_IronManMk7 = true;
+                    break;
             }
 
             ModPlayer.GantryUIActive = false;

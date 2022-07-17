@@ -20,6 +20,9 @@ namespace MarvelTerrariaUniverse.Tiles
 
             if (texture != "IronManMk1")
             {
+                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Flight/{texture}_Body_Flight", EquipType.Body, name: $"{texture}_Body_Flight");
+                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Flight/{texture}_Legs_Hover", EquipType.Legs, name: $"{texture}_Legs_Hover");
+
                 for (int i = 0; i < 6; i++)
                 {
                     EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
@@ -46,6 +49,13 @@ namespace MarvelTerrariaUniverse.Tiles
                         int faceplate = EquipLoader.GetEquipSlot(Mod, $"{item}_Faceplate{i}", EquipType.Head);
                         ArmorIDs.Head.Sets.DrawBackHair[faceplate] = false;
                     }
+
+                    int bodyFlight = EquipLoader.GetEquipSlot(Mod, $"{item}_Body_Flight", EquipType.Body);
+                    int legsHover = EquipLoader.GetEquipSlot(Mod, $"{item}_Legs_Hover", EquipType.Legs);
+
+                    ArmorIDs.Body.Sets.HidesTopSkin[bodyFlight] = true;
+                    ArmorIDs.Body.Sets.HidesArms[bodyFlight] = true;
+                    ArmorIDs.Legs.Sets.HidesBottomSkin[legsHover] = true;
                 }
 
                 ArmorIDs.Head.Sets.DrawBackHair[head] = false;
@@ -65,6 +75,7 @@ namespace MarvelTerrariaUniverse.Tiles
             LoadEquipTextures("IronManMk4");
             LoadEquipTextures("IronManMk5");
             LoadEquipTextures("IronManMk6");
+            LoadEquipTextures("IronManMk7");
         }
 
         public override void SetStaticDefaults()

@@ -148,4 +148,40 @@ namespace MarvelTerrariaUniverse
             drawInfo.DrawDataCache.Add(drawData);
         }
     }
+
+
+    public sealed class IronManFlameLayer : PlayerDrawLayer
+    {
+        public override Position GetDefaultPosition()
+        {
+            return new BeforeParent(PlayerDrawLayers.Leggings);
+        }
+
+        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
+        {
+            Player drawPlayer = drawInfo.drawPlayer;
+            IronManModPlayer IronManModPlayer = drawPlayer.GetModPlayer<IronManModPlayer>();
+
+            if (drawPlayer.dead || drawPlayer.invis || drawPlayer.legs == -1)
+            {
+                return false;
+            }
+            return IronManModPlayer.TransformationActive_IronMan && IronManModPlayer.Flying;
+        }
+
+        protected override void Draw(ref PlayerDrawSet drawInfo)
+        {
+            Player drawPlayer = drawInfo.drawPlayer;
+            IronManModPlayer IronManModPlayer = drawPlayer.GetModPlayer<IronManModPlayer>();
+
+            Texture2D texture = ModContent.Request<Texture2D>("MarvelTerrariaUniverse/TransformationTextures/Glowmasks/IronMan_Flame" + (IronManModPlayer.Hovering ? "_Hover" : "")).Value;
+            Vector2 drawPos = drawInfo.Position - Main.screenPosition + new Vector2(drawPlayer.width / 2 - 10f - (drawPlayer.direction == 1 ? 2f : 4f), drawPlayer.height - 8f) + drawPlayer.legPosition;
+            Vector2 legsOffset = drawInfo.legsOffset;
+            DrawData drawData = new(texture, drawPos.Floor() + legsOffset, new Rectangle(0, IronManModPlayer.FlameFrameCount * (texture.Height / (IronManModPlayer.Hovering ? 2 : 3)), texture.Width, texture.Height / (IronManModPlayer.Hovering ? 2 : 3)), Color.White, drawPlayer.legRotation, legsOffset, 1f, drawInfo.playerEffect, 0)
+            {
+                shader = drawInfo.cLegs
+            };
+            drawInfo.DrawDataCache.Add(drawData);
+        }
+    }
 }
