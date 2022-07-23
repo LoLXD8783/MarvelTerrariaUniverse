@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MarvelTerrariaUniverse.ModPlayers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -69,6 +70,7 @@ namespace MarvelTerrariaUniverse.Tiles
         {
             if (Main.netMode == NetmodeID.Server) return;
 
+            LoadEquipTextures("WarMachineMk1");
             LoadEquipTextures("IronManMk1");
             LoadEquipTextures("IronManMk2");
             LoadEquipTextures("IronManMk3");

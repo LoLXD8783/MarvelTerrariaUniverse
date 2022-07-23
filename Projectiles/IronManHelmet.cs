@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MarvelTerrariaUniverse.ModPlayers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -53,7 +55,7 @@ namespace MarvelTerrariaUniverse.Projectiles
             Projectile.velocity.X = Projectile.velocity.X * 0.97f;
             Projectile.rotation += Projectile.velocity.X * 0.1f;
 
-            if (!ModPlayer.TransformationActive_IronMan)
+            if (!ModPlayer.TransformationActive_IronMan || (Projectile.Hitbox.Contains(Main.MouseWorld.ToPoint()) && PlayerInput.Triggers.JustPressed.MouseLeft))
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -62,10 +64,11 @@ namespace MarvelTerrariaUniverse.Projectiles
 
                 Projectile.Kill();
                 ModPlayer.HelmetDropped = false;
+                ModPlayer.HelmetOn = true;
             }
         }
 
-        public override void PostDraw(Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
             IronManModPlayer IronManModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
             MTUModPlayer MTUModPlayer = Main.LocalPlayer.GetModPlayer<MTUModPlayer>();
@@ -73,7 +76,9 @@ namespace MarvelTerrariaUniverse.Projectiles
             Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/{MTUModPlayer.ActiveTransformation}/{MTUModPlayer.ActiveTransformation}_Helmet").Value;
             int HelmetFrame = (!IronManModPlayer.TransformationActive_IronManMk1 && IronManModPlayer.FaceplateOn) || IronManModPlayer.TransformationActive_IronManMk1 ? 0 : 1;
 
-            Main.EntitySpriteDraw(Texture, Projectile.Center, new Rectangle(0, 20 * HelmetFrame, 18, IronManModPlayer.TransformationActive_IronManMk1 ? 18 : 20), Color.White, Projectile.rotation, Projectile.Center, 1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(Texture, Projectile.Center - Main.screenPosition, new Rectangle(0, (Texture.Height / 2) * HelmetFrame, Texture.Width, Texture.Height / 2), Color.White, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
+
+            return false;
         }
     }
 }

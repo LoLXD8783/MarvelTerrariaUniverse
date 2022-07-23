@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using MarvelTerrariaUniverse.ModPlayers;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace MarvelTerrariaUniverse

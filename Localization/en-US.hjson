@@ -1,0 +1,12 @@
+Mods: {
+	MarvelTerrariaUniverse: {
+		GantryEntryDescription: {
+			2: Mark II description text
+			3: Mark III description text
+			4: Mark IV description text
+			5: Mark V description text
+			6: Mark VI description text
+			7: Mark VII description text
+		}
+	}
+}

@@ -8,7 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace MarvelTerrariaUniverse
+namespace MarvelTerrariaUniverse.ModPlayers
 {
     public class MTUModPlayer : ModPlayer
     {
@@ -49,7 +49,7 @@ namespace MarvelTerrariaUniverse
 
         public void UseEquipSlot(string texture)
         {
-            if (texture.Contains("IronMan"))
+            if (texture.Contains("IronMan") || texture.Contains("WarMachine"))
             {
                 if (texture == "IronManMk1") Player.head = EquipLoader.GetEquipSlot(Mod, texture, EquipType.Head);
                 else
@@ -64,12 +64,13 @@ namespace MarvelTerrariaUniverse
                         {
                             HeadLayer.RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{IronManModPlayer.FaceplateFrameCount}", EquipType.Head), new DrawLayerData()
                             {
-                                Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/Glowmasks/IronMan_Faceplate{IronManModPlayer.FaceplateFrameCount}_Glowmask")
+                                Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/Glowmasks/IronMan_Faceplate{IronManModPlayer.FaceplateFrameCount}_Glowmask"),
+                                Color = (drawInfo) => texture.Contains("WarMachine") ? new Color(255, 202, 191) : Color.White
                             });
                         }
 
-                        RegisterData(EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body), () => new Color(255, 255, 255, 0));
-                        RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Body_Flight", EquipType.Body), () => new Color(255, 255, 255, 0));
+                        RegisterData(EquipLoader.GetEquipSlot(Mod, texture, EquipType.Body), () => Color.White);
+                        RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Body_Flight", EquipType.Body), () => Color.White);
                     }
                 }
             }
@@ -99,13 +100,6 @@ namespace MarvelTerrariaUniverse
 
             drawInfo.bodyGlowColor = color();
             drawInfo.armGlowColor = color();
-
-            if (drawInfo.drawPlayer == UICharacterEquipped.DrawnPlayer)
-            {
-                drawInfo.colorArmorHead = Color.White;
-                drawInfo.colorArmorBody = Color.White;
-                drawInfo.colorArmorLegs = Color.White;
-            }
         }
     }
 }

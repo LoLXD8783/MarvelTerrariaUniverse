@@ -1,7 +1,10 @@
-﻿using MarvelTerrariaUniverse.UI.Elements;
+﻿using MarvelTerrariaUniverse.ModPlayers;
+using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
@@ -9,6 +12,7 @@ using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -18,16 +22,39 @@ namespace MarvelTerrariaUniverse.UI
     {
         public static bool Visible => Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive;
 
-        private UISearchBar SearchBar;
-        private UIPanel SearchBarPanel;
-        private string SearchString;
+        MarvelTerrariaUniverseModSystem ModSystem => ModContent.GetInstance<MarvelTerrariaUniverseModSystem>();
 
-        private bool ClickedSearchBar;
-        private bool ClickedSomething;
+        UIImageButton SearchButton;
+        UISearchBar SearchBar;
+        UIPanel SearchBarPanel;
+
+        UIGrid SuitButtonGrid;
+        List<UIGantryEntryButton> SuitButtons = new();
+
+        string SearchString;
+
+        bool ClickedSearchBar = false;
+        bool ClickedSomething = false;
+
+        UIGantryEntryButton SelectedOption = null;
+
+        UIPanel EntryInfoPanel;
+        UIElement PreviewContent;
+        UIImage PreviewBorder;
+        UIImage PreviewBackground;
+        UIImage LockedIcon;
+        UIText TitleText;
+        UIImage PreviewImage;
+        UIHorizontalSeparator Separator1;
+        UIImageButton EquipSuitButton;
+        UIHorizontalSeparator Separator2;
+        UIElement DescriptionPanel;
+        UIText DescriptionText;
 
         public override void OnInitialize()
         {
             #region Main Elements
+
             UIElement ContentArea = new()
             {
                 Width = StyleDimension.FromPercent(0.875f),
@@ -62,83 +89,60 @@ namespace MarvelTerrariaUniverse.UI
                 BackgroundColor = new Color(33, 43, 79) * 0.8f
             };
 
-            MainPanel.PaddingTop -= 4f;
-            MainPanel.PaddingBottom -= 4f;
+            MainPanel.SetPadding(0f);
             ContentArea.Append(MainPanel);
-
-            UIElement NavSection = new()
-            {
-                Width = StyleDimension.FromPercent(1f),
-                Height = StyleDimension.FromPixels(24f),
-                Top = StyleDimension.FromPixels(6f),
-                VAlign = 0f,
-            };
-
-            NavSection.SetPadding(0f);
-            MainPanel.Append(NavSection);
-
-            UIElement MainContentContainer = new()
-            {
-                Width = StyleDimension.FromPercent(1f),
-                Height = StyleDimension.FromPixelsAndPercent(-45f, 1f),
-                Top = StyleDimension.FromPixels(40f)
-            };
-
-            MainContentContainer.SetPadding(0f);
-            MainPanel.Append(MainContentContainer);
-
-            UIElement SuitSelectionGridContainer = new()
-            {
-                Width = StyleDimension.FromPixels(650f),
-                Height = StyleDimension.FromPixelsAndPercent(-8f, 1f),
-                VAlign = 0.5f
-            };
-
-            SuitSelectionGridContainer.SetPadding(0f);
-            MainContentContainer.Append(SuitSelectionGridContainer);
-
-            UIPanel SuitInfoContainer = new()
-            {
-                Width = StyleDimension.FromPixelsAndPercent(-660f, 1f),
-                Height = StyleDimension.FromPixelsAndPercent(-8f, 1f),
-                VAlign = 0.5f,
-                HAlign = 1f,
-                BorderColor = new Color(89, 116, 213, 255),
-                BackgroundColor = new Color(73, 94, 171)
-            };
-
-            SuitInfoContainer.SetPadding(0f);
-            MainContentContainer.Append(SuitInfoContainer);
 
             #endregion
 
-            #region NavBar Content
+            #region Suit Selection
 
-            UIImageButton SearchButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Search"))
+            UIElement SuitSelectionContent = new()
             {
-                VAlign = 0.5f
+                Width = StyleDimension.FromPixels((72f * 4) + (15f * 3) + 78f),
+                Height = StyleDimension.FromPercent(1f),
+                HAlign = 0
+            };
+
+            SuitSelectionContent.SetPadding(12f);
+            MainPanel.Append(SuitSelectionContent);
+
+            #region Search Bar
+
+            UIElement SearchBarSection = new()
+            {
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPixels(24f),
+                VAlign = 0f,
+            };
+
+            SearchBarSection.SetPadding(0f);
+            SuitSelectionContent.Append(SearchBarSection);
+
+            SearchButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Search"))
+            {
+                VAlign = 0.5f,
             };
 
             SearchButton.OnClick += Click_SearchArea;
             SearchButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Search_Border"));
             SearchButton.SetVisibility(1f, 1f);
             SearchButton.SetSnapPoint("SearchButton", 0);
-            NavSection.Append(SearchButton);
+            SearchBarSection.Append(SearchButton);
 
             SearchBarPanel = new()
             {
-                Left = StyleDimension.FromPixels(SearchButton.Width.Pixels + 3f),
-                Width = StyleDimension.FromPixels(230 - SearchButton.Width.Pixels - 3f),
+                Width = StyleDimension.FromPixelsAndPercent(-SearchButton.Width.Pixels - 3f, 1f),
                 Height = StyleDimension.FromPercent(1f),
+                HAlign = 1f,
                 VAlign = 0.5f,
                 BackgroundColor = new Color(35, 40, 83),
                 BorderColor = new Color(35, 40, 83)
             };
 
             SearchBarPanel.SetPadding(0f);
-            NavSection.Append(SearchBarPanel);
+            SearchBarSection.Append(SearchBarPanel);
 
-            SearchBar = new(Language.GetText("UI.PlayerNameSlot"), 0.8f)
+            SearchBar = new(Language.GetText("Number / Codename"), 0.8f)
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
@@ -166,39 +170,278 @@ namespace MarvelTerrariaUniverse.UI
 
             #endregion
 
-            #region Suit Selection Grid
+            UIElement SuitSelectionGridContainer = new()
+            {
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPixelsAndPercent(-36f, 1f),
+                Top = StyleDimension.FromPixels(36f)
+            };
 
-            UIGrid SuitButtonGrid = new()
+            SuitSelectionGridContainer.SetPadding(0f);
+            SuitSelectionContent.Append(SuitSelectionGridContainer);
+
+            UIPanel SuitButtonGridContainer = new()
+            {
+                Width = StyleDimension.FromPixels((72f * 4) + (15f * 3) + 24f),
+                Height = StyleDimension.FromPercent(1f),
+                Left = StyleDimension.FromPixels(30f),
+                BorderColor = new Color(89, 116, 213, 255),
+                BackgroundColor = new Color(73, 94, 171)
+            };
+
+            SuitSelectionGridContainer.Append(SuitButtonGridContainer);
+
+            SuitButtonGrid = new()
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
-                ListPadding = 10f,
+                ListPadding = 15f
             };
 
-            SuitSelectionGridContainer.Append(SuitButtonGrid);
+            SuitButtonGridContainer.Append(SuitButtonGrid);
 
-            for (int i = 1; i <= 6; i++)
+            for (int i = 2; i <= 50; i++)
             {
-                UIGantryEntryButton SuitButton = new(i + 1);
+                UIGantryEntryButton SuitButton = new(i);
                 SuitButtonGrid.Add(SuitButton);
+                SuitButtons.Add(SuitButton);
+                SuitButton.OnClick += SuitButton_OnClick;
 
-                SuitButton.Unlocked = true;
+                if (i <= 7) SuitButton.Unlocked = true;
+
+                switch (i)
+                {
+                    case 5:
+                        SuitButton.SetCodename("Suitcase");
+                        break;
+                    case 25:
+                        UIScrollbar SuitButtonGridScrollbar = new()
+                        {
+                            VAlign = 0.5f,
+                            Height = StyleDimension.FromPercent(0.98f),
+                        };
+                        SuitButtonGrid.SetScrollbar(SuitButtonGridScrollbar);
+                        SuitSelectionGridContainer.Append(SuitButtonGridScrollbar);
+                        break;
+                }
             }
 
             #endregion
 
-            #region Suit Info Content
+            #region Suit Info
 
-            UIGantryEntryInfo test = new()
+            #region Preview
+
+            UIElement SuitInfoContent = new()
+            {
+                Width = StyleDimension.FromPixelsAndPercent(-((72f * 4) + (15f * 3) + 78f), 1f),
+                Height = StyleDimension.FromPercent(1f),
+                HAlign = 1f
+            };
+
+            MainPanel.Append(SuitInfoContent);
+
+            EntryInfoPanel = new()
+            {
+                Width = StyleDimension.FromPixelsAndPercent(-24f, 1f),
+                Height = StyleDimension.FromPixelsAndPercent(-24f, 1f),
+                HAlign = 0.5f,
+                VAlign = 0.5f,
+                BorderColor = new Color(89, 116, 213, 255),
+                BackgroundColor = new Color(73, 94, 171),
+                PaddingLeft = 0f,
+                PaddingRight = 0f
+            };
+
+            SuitInfoContent.Append(EntryInfoPanel);
+
+            PreviewContent = new()
+            {
+                Width = StyleDimension.FromPixelsAndPercent(-24f, 1f),
+                Height = StyleDimension.FromPixels(252f),
+                HAlign = 0.5f
+            };
+
+            PreviewContent.SetPadding(0f);
+            EntryInfoPanel.Append(PreviewContent);
+
+            PreviewBorder = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryInfoPreviewBorder", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            {
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
+
+            PreviewBackground = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryInfoPreviewBackground", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            {
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
+
+            LockedIcon = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryLockedIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            {
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
+
+            TitleText = new("")
+            {
+                Left = StyleDimension.FromPixels(15f),
+                Top = StyleDimension.FromPixels(15f),
+            };
+
+            PreviewBackground.Append(TitleText);
+
+            PreviewImage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/TransformationTextures/IronManMk2/IronManMk2_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            {
+                ImageScale = 2f,
+                HAlign = 0.5f,
+                VAlign = 0.65f
+            };
+
+            PreviewBackground.Append(PreviewImage);
+
+            #endregion
+
+            Separator1 = new()
+            {
+                Color = new Color(89, 116, 213, 255),
+                Width = StyleDimension.FromPercent(1f),
+                Top = StyleDimension.FromPixels(264f)
+            };
+
+            EquipSuitButton = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/EquipSuitButton", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            {
+                HAlign = 0.5f,
+                Top = StyleDimension.FromPixels(280f)
+            };
+
+            EquipSuitButton.OnClick += EquipSuitButton_OnClick;
+            EquipSuitButton.SetHoverImage(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/EquipSuitButton_Hover", ReLogic.Content.AssetRequestMode.ImmediateLoad));
+            EquipSuitButton.SetVisibility(1f, 1f);
+            EquipSuitButton.SetSnapPoint("EquipSuitButton", 0);
+
+            UIText EquipSuitButtonText = new("Equip Suit")
+            {
+                HAlign = 0.5f,
+                VAlign = 0.5f
+            };
+
+            EquipSuitButton.Append(EquipSuitButtonText);
+
+            Separator2 = new()
+            {
+                Color = new Color(89, 116, 213, 255),
+                Width = StyleDimension.FromPercent(1f),
+                Top = StyleDimension.FromPixels(332f)
+            };
+
+            #region Description
+
+            DescriptionPanel = new()
+            {
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPixelsAndPercent(-344f, 1f),
+                VAlign = 1f
+            };
+
+            UIPanel DescriptionTextPanel = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_Panel"), null, 12, 7)
+            {
+                Width = StyleDimension.FromPercent(0.75f),
+                Height = StyleDimension.FromPercent(1f),
+                BackgroundColor = new Color(43, 56, 101),
+                BorderColor = Color.Transparent,
+                Left = new StyleDimension(15f, 0f),
+            };
+
+            DescriptionPanel.Append(DescriptionTextPanel);
+
+            DescriptionText = new("", 0.8f)
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
-                PaddingTop = 10f
+                IsWrapped = true
             };
 
-            SuitInfoContainer.Append(test);
+            DescriptionTextPanel.Append(DescriptionText);
 
             #endregion
+
+            #endregion
+        }
+
+        private void EquipSuitButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
+        {
+            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
+
+            switch (SelectedOption.Index)
+            {
+                case 2:
+                    ModPlayer.TransformationActive_IronManMk2 = true;
+                    break;
+                case 3:
+                    ModPlayer.TransformationActive_IronManMk3 = true;
+                    break;
+                case 4:
+                    ModPlayer.TransformationActive_IronManMk4 = true;
+                    break;
+                case 5:
+                    ModPlayer.TransformationActive_IronManMk5 = true;
+                    break;
+                case 6:
+                    ModPlayer.TransformationActive_IronManMk6 = true;
+                    break;
+                case 7:
+                    ModPlayer.TransformationActive_IronManMk7 = true;
+                    break;
+            }
+
+            ModPlayer.GantryUIActive = false;
+        }
+
+        private void SuitButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
+        {
+            if (SelectedOption != null && SelectedOption == listeningElement)
+            {
+                SelectedOption = null;
+                RemoveEntryInfoContent();
+            }
+            else
+            {
+                SelectedOption = listeningElement as UIGantryEntryButton;
+
+                if (SelectedOption.Unlocked)
+                {
+                    LockedIcon.Remove();
+                    PreviewContent.Append(PreviewBorder);
+                    PreviewContent.Append(PreviewBackground);
+                    TitleText.SetText($"Iron Man Mk. {ModSystem.ToRoman(SelectedOption.Index)}{(SelectedOption.Codename == "" ? "" : $"\n\"{SelectedOption.Codename}\"")}");
+                    PreviewImage.SetImage(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/IronManMk{SelectedOption.Index}/IronManMk{SelectedOption.Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad));
+                    EntryInfoPanel.Append(Separator1);
+                    EntryInfoPanel.Append(EquipSuitButton);
+                    EntryInfoPanel.Append(Separator2);
+                    EntryInfoPanel.Append(DescriptionPanel);
+                    DescriptionText.SetText(Language.GetTextValue($"Mods.MarvelTerrariaUniverse.GantryEntryDescription.{SelectedOption.Index}"));
+                }
+                else
+                {
+                    RemoveEntryInfoContent();
+                    PreviewContent.Append(PreviewBorder);
+                    PreviewContent.Append(LockedIcon);
+                }
+            }
+        }
+
+        private void RemoveEntryInfoContent()
+        {
+            PreviewBorder.Remove();
+            PreviewBackground.Remove();
+            LockedIcon.Remove();
+            TitleText.SetText("");
+            Separator1.Remove();
+            EquipSuitButton.Remove();
+            Separator2.Remove();
+            DescriptionPanel.Remove();
+            DescriptionText.SetText("");
         }
 
         private static void ExitUI()
@@ -222,12 +465,14 @@ namespace MarvelTerrariaUniverse.UI
 
         private void Click_GoBack(UIMouseEvent evt, UIElement listeningElement)
         {
+            SelectedOption = null;
+            RemoveEntryInfoContent();
             ExitUI();
         }
 
         private void Click_SearchArea(UIMouseEvent evt, UIElement listeningElement)
         {
-            if (listeningElement.Parent != SearchBarPanel)
+            if (listeningElement == SearchBar || listeningElement == SearchButton || listeningElement == SearchBarPanel)
             {
                 SearchBar.ToggleTakingText();
 
@@ -280,6 +525,11 @@ namespace MarvelTerrariaUniverse.UI
             }
             else SoundEngine.PlaySound(SoundID.MenuTick);
 
+            SuitButtons.ForEach(item =>
+            {
+                if (!SuitButtonGrid._items.Any(i => i == item)) SuitButtonGrid.Add(item);
+            });
+
             GoBackHere();
         }
 
@@ -310,13 +560,25 @@ namespace MarvelTerrariaUniverse.UI
             }
 
             if (ClickedSomething && !ClickedSearchBar && SearchBar.IsWritingText) SearchBar.ToggleTakingText();
-            ClickedSomething = false;
-            ClickedSearchBar = false;
 
             if (Main.keyState.IsKeyDown(Keys.Escape) && !Main.oldKeyState.IsKeyDown(Keys.Escape))
             {
                 if (SearchBar.IsWritingText) GoBackHere();
-                else ExitUI();
+                else
+                {
+                    SelectedOption = null;
+                    RemoveEntryInfoContent();
+                    ExitUI();
+                }
+            }
+
+            if (SearchString != null)
+            {
+                SuitButtons.ForEach(item =>
+                {
+                    if (!item.Codename.ToLower().Contains(SearchString) && !item.Index.ToString().Contains(SearchString)) SuitButtonGrid.Remove(item);
+                    else if (!SuitButtonGrid._items.Any(i => i == item)) SuitButtonGrid.Add(item);
+                });
             }
         }
     }

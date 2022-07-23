@@ -8,7 +8,7 @@ using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace MarvelTerrariaUniverse
+namespace MarvelTerrariaUniverse.ModPlayers
 {
     public class IronManModPlayer : ModPlayer
     {
@@ -36,7 +36,8 @@ namespace MarvelTerrariaUniverse
 
         public readonly List<string> IronManSuitTextures = new();
 
-        public bool TransformationActive_IronMan => TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6 || TransformationActive_IronManMk7;
+        public bool TransformationActive_IronMan => TransformationActive_WarMachineMk1 || TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6 || TransformationActive_IronManMk7;
+        public bool TransformationActive_WarMachineMk1;
         public bool TransformationActive_IronManMk1;
         public bool TransformationActive_IronManMk2;
         public bool TransformationActive_IronManMk3;
@@ -54,6 +55,7 @@ namespace MarvelTerrariaUniverse
             Flying = false;
             FlameFrameCount = 0;
 
+            TransformationActive_WarMachineMk1 = false;
             TransformationActive_IronManMk1 = false;
             TransformationActive_IronManMk2 = false;
             TransformationActive_IronManMk3 = false;
@@ -143,6 +145,7 @@ namespace MarvelTerrariaUniverse
 
         public override void FrameEffects()
         {
+            if (TransformationActive_WarMachineMk1) MTUModPlayer.UseEquipSlot("WarMachineMk1");
             if (TransformationActive_IronManMk1) MTUModPlayer.UseEquipSlot("IronManMk1");
             if (TransformationActive_IronManMk2) MTUModPlayer.UseEquipSlot("IronManMk2");
             if (TransformationActive_IronManMk3) MTUModPlayer.UseEquipSlot("IronManMk3");
