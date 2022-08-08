@@ -11,19 +11,18 @@ namespace MarvelTerrariaUniverse
     public class MarvelTerrariaUniverseModSystem : ModSystem
     {
         internal UserInterface GantryUserInterface;
-        internal GantryUI GantryUI = new();
-
         internal UserInterface IronManHUDUserInterface;
-        internal IronManHUD IronManHUD = new();
 
         public override void Load()
         {
             if (!Main.dedServ)
             {
+                GantryUI GantryUI = new();
                 GantryUserInterface = new UserInterface();
                 GantryUserInterface.SetState(GantryUI);
                 GantryUI.Activate();
 
+                IronManHUD IronManHUD = new();
                 IronManHUDUserInterface = new UserInterface();
                 IronManHUDUserInterface.SetState(IronManHUD);
                 IronManHUD.Activate();

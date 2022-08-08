@@ -1,11 +1,11 @@
 using MarvelTerrariaUniverse.Tiles;
-using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace MarvelTerrariaUniverse.ModPlayers
@@ -100,6 +100,14 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
             drawInfo.bodyGlowColor = color();
             drawInfo.armGlowColor = color();
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (Keybinds.Reinstantiate.JustPressed)
+            {
+                ModContent.GetInstance<MarvelTerrariaUniverseModSystem>().Load();
+            }
         }
     }
 }

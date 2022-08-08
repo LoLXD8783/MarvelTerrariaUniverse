@@ -1,12 +1,15 @@
 Mods: {
 	MarvelTerrariaUniverse: {
+		IronManSuitAlias: {
+			5: Suitcase
+		}
 		GantryEntryDescription: {
-			2: Mark II description text
-			3: Mark III description text
-			4: Mark IV description text
-			5: Mark V description text
-			6: Mark VI description text
-			7: Mark VII description text
+			2: Constructed as a prototype with the emphasized purpose of exploring free-flight potential. Incapable of reaching high altitudes due to a buildup of ice caused by the freezing temperatures.
+			3: Designed with upgraded technology and improved features meant to surpass its predecessor's capabilities. Includes a diverse weaponry arsenal as well as improved power and durability limits.
+			4: Differs only slightly from its predecessor, featuring mainly cosmetic changes as well as a few changes in the capabilities of the armor itself.
+			5: Features a new portability system that allows the armor to fold itself into the shape of a small briefcase. This briefcase can be deployed anywhere and is useful in emergency situations.
+			6: An "all-purpose" suit with an improved Arc Reactor. The main focus of this suit is power limit improvements, while the arsenal and capabilities remain virtually identical to its recognized predecessor.
+			7: A "fully loaded rapid-deployment" suit built for heavy combat, with the unique feature of being able to be called from anywhere. This suit is folded into a pill-shaped pod and deconstructs itself to fit on the wearer when summoned.
 		}
 	}
 }

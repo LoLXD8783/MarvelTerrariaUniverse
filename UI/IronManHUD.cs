@@ -13,13 +13,13 @@ namespace MarvelTerrariaUniverse.UI
 
         public override void OnInitialize()
         {
-            UIAnimatedImage StatBarsPanel = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/IronManHUDStatBarsPanel", ReLogic.Content.AssetRequestMode.ImmediateLoad), 35)
+/*            UIAnimatedImage StatBarsPanel = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/IronManHUDStatBarsPanel", ReLogic.Content.AssetRequestMode.ImmediateLoad), 35)
             {
                 HAlign = 0.98f,
                 VAlign = 0.01f
             };
 
-            Append(StatBarsPanel);
+            Append(StatBarsPanel);*/
         }
     }
 }

@@ -12,7 +12,6 @@ using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -20,36 +19,26 @@ namespace MarvelTerrariaUniverse.UI
 {
     public class GantryUI : UIState
     {
+        IronManModPlayer IronManModPlayer => Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
+
         public static bool Visible => Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive;
 
-        MarvelTerrariaUniverseModSystem ModSystem => ModContent.GetInstance<MarvelTerrariaUniverseModSystem>();
+        public UIGantryEntryButton SelectedOption = null;
 
         UIImageButton SearchButton;
         UISearchBar SearchBar;
         UIPanel SearchBarPanel;
 
         UIGrid SuitButtonGrid;
-        List<UIGantryEntryButton> SuitButtons = new();
+        readonly List<UIGantryEntryButton> SuitButtons = new();
 
         string SearchString;
 
         bool ClickedSearchBar = false;
         bool ClickedSomething = false;
 
-        UIGantryEntryButton SelectedOption = null;
-
-        UIPanel EntryInfoPanel;
-        UIElement PreviewContent;
-        UIImage PreviewBorder;
-        UIImage PreviewBackground;
-        UIImage LockedIcon;
-        UIText TitleText;
-        UIImage PreviewImage;
-        UIHorizontalSeparator Separator1;
-        UIImageButton EquipSuitButton;
-        UIHorizontalSeparator Separator2;
-        UIElement DescriptionPanel;
-        UIText DescriptionText;
+        UIElement SuitInfoContentContainer;
+        UIPanel EmptySuitInfoPanel;
 
         public override void OnInitialize()
         {
@@ -118,20 +107,9 @@ namespace MarvelTerrariaUniverse.UI
             SearchBarSection.SetPadding(0f);
             SuitSelectionContent.Append(SearchBarSection);
 
-            SearchButton = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Search"))
-            {
-                VAlign = 0.5f,
-            };
-
-            SearchButton.OnClick += Click_SearchArea;
-            SearchButton.SetHoverImage(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Button_Search_Border"));
-            SearchButton.SetVisibility(1f, 1f);
-            SearchButton.SetSnapPoint("SearchButton", 0);
-            SearchBarSection.Append(SearchButton);
-
             SearchBarPanel = new()
             {
-                Width = StyleDimension.FromPixelsAndPercent(-SearchButton.Width.Pixels - 3f, 1f),
+                Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
                 HAlign = 1f,
                 VAlign = 0.5f,
@@ -150,6 +128,7 @@ namespace MarvelTerrariaUniverse.UI
                 VAlign = 0.5f
             };
 
+            SearchBar.OnClick += Click_SearchArea;
             SearchBar.OnContentsChanged += OnSearchContentsChanged;
             SearchBar.OnStartTakingInput += OnStartTakingInput;
             SearchBar.OnEndTakingInput += OnEndTakingInput;
@@ -184,7 +163,6 @@ namespace MarvelTerrariaUniverse.UI
             {
                 Width = StyleDimension.FromPixels((72f * 4) + (15f * 3) + 24f),
                 Height = StyleDimension.FromPercent(1f),
-                Left = StyleDimension.FromPixels(30f),
                 BorderColor = new Color(89, 116, 213, 255),
                 BackgroundColor = new Color(73, 94, 171)
             };
@@ -200,8 +178,19 @@ namespace MarvelTerrariaUniverse.UI
 
             SuitButtonGridContainer.Append(SuitButtonGrid);
 
+            UIScrollbar SuitButtonGridScrollbar = new()
+            {
+                HAlign = 1f,
+                VAlign = 0.5f,
+                Height = StyleDimension.FromPercent(0.98f),
+            };
+            SuitButtonGrid.SetScrollbar(SuitButtonGridScrollbar);
+            SuitSelectionGridContainer.Append(SuitButtonGridScrollbar);
+
             for (int i = 2; i <= 50; i++)
             {
+                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronManSuitAlias.{i}";
+
                 UIGantryEntryButton SuitButton = new(i);
                 SuitButtonGrid.Add(SuitButton);
                 SuitButtons.Add(SuitButton);
@@ -209,193 +198,35 @@ namespace MarvelTerrariaUniverse.UI
 
                 if (i <= 7) SuitButton.Unlocked = true;
 
-                switch (i)
-                {
-                    case 5:
-                        SuitButton.SetCodename("Suitcase");
-                        break;
-                    case 25:
-                        UIScrollbar SuitButtonGridScrollbar = new()
-                        {
-                            VAlign = 0.5f,
-                            Height = StyleDimension.FromPercent(0.98f),
-                        };
-                        SuitButtonGrid.SetScrollbar(SuitButtonGridScrollbar);
-                        SuitSelectionGridContainer.Append(SuitButtonGridScrollbar);
-                        break;
-                }
+                if (Language.Exists(AliasKey)) SuitButton.SetCodename(Language.GetTextValue(AliasKey));
             }
 
             #endregion
 
             #region Suit Info
 
-            #region Preview
-
-            UIElement SuitInfoContent = new()
+            SuitInfoContentContainer = new()
             {
                 Width = StyleDimension.FromPixelsAndPercent(-((72f * 4) + (15f * 3) + 78f), 1f),
                 Height = StyleDimension.FromPercent(1f),
                 HAlign = 1f
             };
 
-            MainPanel.Append(SuitInfoContent);
+            SuitInfoContentContainer.SetPadding(12f);
 
-            EntryInfoPanel = new()
+            MainPanel.Append(SuitInfoContentContainer);
+
+            EmptySuitInfoPanel = new()
             {
-                Width = StyleDimension.FromPixelsAndPercent(-24f, 1f),
-                Height = StyleDimension.FromPixelsAndPercent(-24f, 1f),
-                HAlign = 0.5f,
-                VAlign = 0.5f,
+                Width = StyleDimension.FromPercent(1f),
+                Height = StyleDimension.FromPercent(1f),
                 BorderColor = new Color(89, 116, 213, 255),
-                BackgroundColor = new Color(73, 94, 171),
-                PaddingLeft = 0f,
-                PaddingRight = 0f
+                BackgroundColor = new Color(73, 94, 171)
             };
 
-            SuitInfoContent.Append(EntryInfoPanel);
-
-            PreviewContent = new()
-            {
-                Width = StyleDimension.FromPixelsAndPercent(-24f, 1f),
-                Height = StyleDimension.FromPixels(252f),
-                HAlign = 0.5f
-            };
-
-            PreviewContent.SetPadding(0f);
-            EntryInfoPanel.Append(PreviewContent);
-
-            PreviewBorder = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryInfoPreviewBorder", ReLogic.Content.AssetRequestMode.ImmediateLoad))
-            {
-                HAlign = 0.5f,
-                VAlign = 0.5f
-            };
-
-            PreviewBackground = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryInfoPreviewBackground", ReLogic.Content.AssetRequestMode.ImmediateLoad))
-            {
-                HAlign = 0.5f,
-                VAlign = 0.5f
-            };
-
-            LockedIcon = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/GantryEntryLockedIcon", ReLogic.Content.AssetRequestMode.ImmediateLoad))
-            {
-                HAlign = 0.5f,
-                VAlign = 0.5f
-            };
-
-            TitleText = new("")
-            {
-                Left = StyleDimension.FromPixels(15f),
-                Top = StyleDimension.FromPixels(15f),
-            };
-
-            PreviewBackground.Append(TitleText);
-
-            PreviewImage = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/TransformationTextures/IronManMk2/IronManMk2_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
-            {
-                ImageScale = 2f,
-                HAlign = 0.5f,
-                VAlign = 0.65f
-            };
-
-            PreviewBackground.Append(PreviewImage);
+            SuitInfoContentContainer.Append(EmptySuitInfoPanel);
 
             #endregion
-
-            Separator1 = new()
-            {
-                Color = new Color(89, 116, 213, 255),
-                Width = StyleDimension.FromPercent(1f),
-                Top = StyleDimension.FromPixels(264f)
-            };
-
-            EquipSuitButton = new(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/EquipSuitButton", ReLogic.Content.AssetRequestMode.ImmediateLoad))
-            {
-                HAlign = 0.5f,
-                Top = StyleDimension.FromPixels(280f)
-            };
-
-            EquipSuitButton.OnClick += EquipSuitButton_OnClick;
-            EquipSuitButton.SetHoverImage(ModContent.Request<Texture2D>("MarvelTerrariaUniverse/UI/Textures/EquipSuitButton_Hover", ReLogic.Content.AssetRequestMode.ImmediateLoad));
-            EquipSuitButton.SetVisibility(1f, 1f);
-            EquipSuitButton.SetSnapPoint("EquipSuitButton", 0);
-
-            UIText EquipSuitButtonText = new("Equip Suit")
-            {
-                HAlign = 0.5f,
-                VAlign = 0.5f
-            };
-
-            EquipSuitButton.Append(EquipSuitButtonText);
-
-            Separator2 = new()
-            {
-                Color = new Color(89, 116, 213, 255),
-                Width = StyleDimension.FromPercent(1f),
-                Top = StyleDimension.FromPixels(332f)
-            };
-
-            #region Description
-
-            DescriptionPanel = new()
-            {
-                Width = StyleDimension.FromPercent(1f),
-                Height = StyleDimension.FromPixelsAndPercent(-344f, 1f),
-                VAlign = 1f
-            };
-
-            UIPanel DescriptionTextPanel = new(Main.Assets.Request<Texture2D>("Images/UI/Bestiary/Stat_Panel"), null, 12, 7)
-            {
-                Width = StyleDimension.FromPercent(0.75f),
-                Height = StyleDimension.FromPercent(1f),
-                BackgroundColor = new Color(43, 56, 101),
-                BorderColor = Color.Transparent,
-                Left = new StyleDimension(15f, 0f),
-            };
-
-            DescriptionPanel.Append(DescriptionTextPanel);
-
-            DescriptionText = new("", 0.8f)
-            {
-                Width = StyleDimension.FromPercent(1f),
-                Height = StyleDimension.FromPercent(1f),
-                IsWrapped = true
-            };
-
-            DescriptionTextPanel.Append(DescriptionText);
-
-            #endregion
-
-            #endregion
-        }
-
-        private void EquipSuitButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
-        {
-            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
-
-            switch (SelectedOption.Index)
-            {
-                case 2:
-                    ModPlayer.TransformationActive_IronManMk2 = true;
-                    break;
-                case 3:
-                    ModPlayer.TransformationActive_IronManMk3 = true;
-                    break;
-                case 4:
-                    ModPlayer.TransformationActive_IronManMk4 = true;
-                    break;
-                case 5:
-                    ModPlayer.TransformationActive_IronManMk5 = true;
-                    break;
-                case 6:
-                    ModPlayer.TransformationActive_IronManMk6 = true;
-                    break;
-                case 7:
-                    ModPlayer.TransformationActive_IronManMk7 = true;
-                    break;
-            }
-
-            ModPlayer.GantryUIActive = false;
         }
 
         private void SuitButton_OnClick(UIMouseEvent evt, UIElement listeningElement)
@@ -403,51 +234,23 @@ namespace MarvelTerrariaUniverse.UI
             if (SelectedOption != null && SelectedOption == listeningElement)
             {
                 SelectedOption = null;
-                RemoveEntryInfoContent();
+                SuitInfoContentContainer.RemoveAllChildren();
+                SuitInfoContentContainer.Append(EmptySuitInfoPanel);
             }
             else
             {
                 SelectedOption = listeningElement as UIGantryEntryButton;
+                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronManSuitAlias.{SelectedOption.Index}";
 
-                if (SelectedOption.Unlocked)
-                {
-                    LockedIcon.Remove();
-                    PreviewContent.Append(PreviewBorder);
-                    PreviewContent.Append(PreviewBackground);
-                    TitleText.SetText($"Iron Man Mk. {ModSystem.ToRoman(SelectedOption.Index)}{(SelectedOption.Codename == "" ? "" : $"\n\"{SelectedOption.Codename}\"")}");
-                    PreviewImage.SetImage(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/IronManMk{SelectedOption.Index}/IronManMk{SelectedOption.Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad));
-                    EntryInfoPanel.Append(Separator1);
-                    EntryInfoPanel.Append(EquipSuitButton);
-                    EntryInfoPanel.Append(Separator2);
-                    EntryInfoPanel.Append(DescriptionPanel);
-                    DescriptionText.SetText(Language.GetTextValue($"Mods.MarvelTerrariaUniverse.GantryEntryDescription.{SelectedOption.Index}"));
-                }
-                else
-                {
-                    RemoveEntryInfoContent();
-                    PreviewContent.Append(PreviewBorder);
-                    PreviewContent.Append(LockedIcon);
-                }
+                UIGantryEntryInfoPanel SelectedOptionInfo = new(SelectedOption.Index, 5, 5, Language.Exists(AliasKey) ? Language.GetTextValue(AliasKey) : null, !SelectedOption.Unlocked);
+                SelectedOptionInfo.Weapons = new() { "a", "b", "c" };
+                SelectedOptionInfo.Strengths = new() { "a", "b", "c" };
+                SelectedOptionInfo.Weaknesses = new() { "a", "b", "c" };
+
+                SelectedOption.Initialize();
+                SuitInfoContentContainer.Append(SelectedOptionInfo);
+                EmptySuitInfoPanel.Remove();
             }
-        }
-
-        private void RemoveEntryInfoContent()
-        {
-            PreviewBorder.Remove();
-            PreviewBackground.Remove();
-            LockedIcon.Remove();
-            TitleText.SetText("");
-            Separator1.Remove();
-            EquipSuitButton.Remove();
-            Separator2.Remove();
-            DescriptionPanel.Remove();
-            DescriptionText.SetText("");
-        }
-
-        private static void ExitUI()
-        {
-            SoundEngine.PlaySound(SoundID.MenuClose);
-            Main.LocalPlayer.GetModPlayer<IronManModPlayer>().GantryUIActive = false;
         }
 
         private void FadedMouseOver(UIMouseEvent evt, UIElement listeningElement)
@@ -466,8 +269,10 @@ namespace MarvelTerrariaUniverse.UI
         private void Click_GoBack(UIMouseEvent evt, UIElement listeningElement)
         {
             SelectedOption = null;
-            RemoveEntryInfoContent();
-            ExitUI();
+            SuitInfoContentContainer.RemoveAllChildren();
+            SuitInfoContentContainer.Append(EmptySuitInfoPanel);
+            SoundEngine.PlaySound(SoundID.MenuClose);
+            IronManModPlayer.GantryUIActive = false;
         }
 
         private void Click_SearchArea(UIMouseEvent evt, UIElement listeningElement)
@@ -567,8 +372,10 @@ namespace MarvelTerrariaUniverse.UI
                 else
                 {
                     SelectedOption = null;
-                    RemoveEntryInfoContent();
-                    ExitUI();
+                    SuitInfoContentContainer.RemoveAllChildren();
+                    SuitInfoContentContainer.Append(EmptySuitInfoPanel);
+                    SoundEngine.PlaySound(SoundID.MenuClose);
+                    IronManModPlayer.GantryUIActive = false;
                 }
             }
 
@@ -576,8 +383,15 @@ namespace MarvelTerrariaUniverse.UI
             {
                 SuitButtons.ForEach(item =>
                 {
-                    if (!item.Codename.ToLower().Contains(SearchString) && !item.Index.ToString().Contains(SearchString)) SuitButtonGrid.Remove(item);
-                    else if (!SuitButtonGrid._items.Any(i => i == item)) SuitButtonGrid.Add(item);
+                    if (SearchString == "")
+                    {
+                        if (!SuitButtonGrid._items.Any(i => i == item)) SuitButtonGrid.Add(item);
+                    }
+                    else
+                    {
+                        if ((!item.Codename.ToLower().Contains(SearchString) && !item.Index.ToString().Contains(SearchString)) || !item.Unlocked) SuitButtonGrid.Remove(item);
+                        else if (!SuitButtonGrid._items.Any(i => i == item)) SuitButtonGrid.Add(item);
+                    }
                 });
             }
         }
