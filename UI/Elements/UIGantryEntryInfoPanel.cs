@@ -29,9 +29,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
         private bool DescriptionPanelSizeFixed = false;
 
-        public List<string> Weapons = null;
-        public List<string> Strengths = null;
-        public List<string> Weaknesses = null;
+        public List<int> Weapons = null;
 
         public UIGantryEntryInfoPanel(int index, int suitPowerRating, int suitIntegrityRating, string alias = null, bool locked = true)
         {
@@ -260,7 +258,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             AddElementToList(DescriptionTextPanel);
 
-            DescriptionText = new(Language.GetTextValue($"Mods.MarvelTerrariaUniverse.GantryEntryDescription.{Index}"), 0.9f)
+            DescriptionText = new(Language.GetTextValue($"Mods.MarvelTerrariaUniverse.IronMan.{Index}.GantryEntryDescription"), 0.9f)
             {
                 Width = StyleDimension.FromPercent(1f),
                 IsWrapped = true
@@ -326,66 +324,35 @@ namespace MarvelTerrariaUniverse.UI.Elements
             {
                 DescriptionTextPanel.Height.Set(DescriptionText.GetOuterDimensions().Height, 0f);
                 DescriptionPanelSizeFixed = true;
+
+                if (!GridDrawn)
+                {
+                    Weapons ??= new();
+
+                    if (Weapons.Count > 0)
+                    {
+                        UIItemRow WeaponsRow = new("Weapons", Weapons)
+                        {
+                            BackgroundColor = Color.DarkRed * 0.6f,
+                            BorderColor = Color.Transparent,
+                            Width = StyleDimension.FromPixelsAndPercent(-30f, 1f),
+                            HAlign = 0.5f
+                        };
+
+                        AddElementToList(WeaponsRow, false);
+                    }
+
+                    GridDrawn = true;
+                }
+
                 base.Draw(spriteBatch);
             }
             else base.Draw(spriteBatch);
-
-            if (!GridDrawn)
-            {
-                if (Weapons.Count > 0)
-                {
-                    UIItemRow WeaponsRow = new("Weapons", new() { Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1 })
-                    {
-                        BackgroundColor = Color.DarkRed * 0.6f,
-                        BorderColor = Color.Transparent,
-                        Width = StyleDimension.FromPixelsAndPercent(-30f, 1f),
-                        HAlign = 0.5f
-                    };
-
-                    AddElementToList(WeaponsRow, false);
-                }
-
-                if (Strengths.Count > 0)
-                {
-                    UIItemRow StrengthsRow = new("Strengths", new() { Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1 })
-                    {
-                        BackgroundColor = Color.ForestGreen * 0.6f,
-                        BorderColor = Color.Transparent,
-                        Width = StyleDimension.FromPixelsAndPercent(-30f, 1f),
-                        HAlign = 0.5f
-                    };
-
-                    AddElementToList(StrengthsRow, false);
-                }
-
-                if (Weaknesses.Count > 0)
-                {
-                    UIItemRow WeaknessesRow = new("Weaknesses", new() { Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1, Main.rand.Next(5124) + 1 })
-                    {
-                        BackgroundColor = Color.LightGoldenrodYellow * 0.6f,
-                        BorderColor = Color.Transparent,
-                        Width = StyleDimension.FromPixelsAndPercent(-30f, 1f),
-                        HAlign = 0.5f
-                    };
-
-                    AddElementToList(WeaknessesRow, false);
-                }
-
-                UIHorizontalSeparator Separator = new()
-                {
-                    Color = new Color(89, 116, 213, 255),
-                    Width = StyleDimension.FromPercent(1f)
-                };
-
-                ElementList.Add(Separator);
-
-                GridDrawn = true;
-            }
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            if (DescriptionPanelSizeFixed || Locked) base.DrawSelf(spriteBatch);
+            if ((DescriptionPanelSizeFixed && GridDrawn) || Locked) base.DrawSelf(spriteBatch);
         }
     }
 }

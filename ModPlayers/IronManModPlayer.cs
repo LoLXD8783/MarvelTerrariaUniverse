@@ -1,10 +1,10 @@
 ﻿using MarvelTerrariaUniverse.Mounts;
 using MarvelTerrariaUniverse.Projectiles;
-using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ModLoader;
@@ -19,6 +19,11 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
         public float HeadRotation;
         public float TargetHeadRotation;
+        public int TargetArmFrame = 2;
+
+        public bool SuitToggleRequested = false;
+        public bool SuitEjected = false;
+        public int EjectedSuitDirection = -1;
 
         public bool FaceplateOn = true;
         public bool FaceplateMoving = false;
@@ -35,6 +40,12 @@ namespace MarvelTerrariaUniverse.ModPlayers
         public int FlameFrameCount = 0;
         public int FlameFrameTimer = 0;
 
+        public int RepulsorCooldown = 0;
+        public bool RepulsorRequested = false;
+
+        public int UnibeamCooldown = 0;
+        public bool UnibeamRequested = false;
+
         public readonly List<string> IronManSuitTextures = new();
 
         public bool TransformationActive_IronMan => TransformationActive_WarMachineMk1 || TransformationActive_IronManMk1 || TransformationActive_IronManMk2 || TransformationActive_IronManMk3 || TransformationActive_IronManMk4 || TransformationActive_IronManMk5 || TransformationActive_IronManMk6 || TransformationActive_IronManMk7;
@@ -47,23 +58,77 @@ namespace MarvelTerrariaUniverse.ModPlayers
         public bool TransformationActive_IronManMk6;
         public bool TransformationActive_IronManMk7;
 
-        public void ResetSuits_IronMan()
+        public override void Load()
         {
-            FaceplateFrameCount = 0;
-            FaceplateOn = true;
-            HelmetOn = true;
+            On.Terraria.Player.HorizontalMovement += static (orig, player) =>
+            {
+                orig(player);
+                Main.LocalPlayer.GetModPlayer<IronManModPlayer>()?.ForceDirection();
+            };
+
+            On.Terraria.Player.ChangeDir += static (orig, player, dir) =>
+            {
+                orig(player, dir);
+                Main.LocalPlayer.GetModPlayer<IronManModPlayer>()?.ForceDirection();
+            };
+        }
+
+        private void ForceDirection()
+        {
+            if (TransformationActive_IronMan && (RepulsorRequested || UnibeamRequested))
+            {
+                if (!Flying || (Flying && Hovering)) Player.direction = Main.MouseWorld.X >= Player.Center.X ? 1 : -1;
+                else Player.direction = (Main.MouseWorld.Y >= Player.Center.Y ? 1 : -1) * Math.Sign(Player.velocity.X);
+            }
+        }
+
+        public void ResetSuits_IronMan(bool eject = false)
+        {
             FlightToggled = false;
             Flying = false;
             FlameFrameCount = 0;
 
-            TransformationActive_WarMachineMk1 = false;
-            TransformationActive_IronManMk1 = false;
-            TransformationActive_IronManMk2 = false;
-            TransformationActive_IronManMk3 = false;
-            TransformationActive_IronManMk4 = false;
-            TransformationActive_IronManMk5 = false;
-            TransformationActive_IronManMk6 = false;
-            TransformationActive_IronManMk7 = false;
+            Player.mount.Dismount(Player);
+
+            if (!eject)
+            {
+                SuitToggleRequested = false;
+                SuitEjected = false;
+
+                FaceplateFrameCount = 0;
+                FaceplateOn = true;
+
+                HelmetOn = true;
+
+                RepulsorCooldown = 0;
+                RepulsorRequested = false;
+
+                UnibeamCooldown = 0;
+                UnibeamRequested = false;
+
+                TransformationActive_WarMachineMk1 = false;
+                TransformationActive_IronManMk1 = false;
+                TransformationActive_IronManMk2 = false;
+                TransformationActive_IronManMk3 = false;
+                TransformationActive_IronManMk4 = false;
+                TransformationActive_IronManMk5 = false;
+                TransformationActive_IronManMk6 = false;
+                TransformationActive_IronManMk7 = false;
+            }
+        }
+
+        public void SuitToggle()
+        {
+            if (SuitToggleRequested)
+            {
+                EjectedSuitDirection = Player.direction;
+                if (!SuitEjected) Projectile.NewProjectile(Terraria.Entity.GetSource_None(), EjectedSuitDirection == -1 ? Player.Center : new Vector2(Player.Center.X - 1, Player.Center.Y), new Vector2(Player.velocity.X, 0f), ModContent.ProjectileType<IronManSuit>(), 0, 0);
+
+                ResetSuits_IronMan(true);
+
+                SuitEjected = !SuitEjected;
+                SuitToggleRequested = false;
+            }
         }
 
         public void FaceplateToggle()
@@ -144,16 +209,49 @@ namespace MarvelTerrariaUniverse.ModPlayers
             }
         }
 
+        public void WeaponFunctions()
+        {
+            if (RepulsorRequested)
+            {
+                RepulsorCooldown++;
+
+                Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Player.Center - Main.MouseWorld).ToRotation() + MathHelper.PiOver2 - Player.fullRotation);
+                if (RepulsorCooldown >= 60)
+                {
+                    SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+
+                    RepulsorCooldown = 0;
+                    RepulsorRequested = false;
+                }
+            }
+
+            if (UnibeamRequested)
+            {
+                UnibeamCooldown++;
+
+                if (UnibeamCooldown >= 180)
+                {
+                    SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+
+                    UnibeamCooldown = 0;
+                    UnibeamRequested = false;
+                }
+            }
+        }
+
         public override void FrameEffects()
         {
-            if (TransformationActive_WarMachineMk1) MTUModPlayer.UseEquipSlot("WarMachineMk1");
-            if (TransformationActive_IronManMk1) MTUModPlayer.UseEquipSlot("IronManMk1");
-            if (TransformationActive_IronManMk2) MTUModPlayer.UseEquipSlot("IronManMk2");
-            if (TransformationActive_IronManMk3) MTUModPlayer.UseEquipSlot("IronManMk3");
-            if (TransformationActive_IronManMk4) MTUModPlayer.UseEquipSlot("IronManMk4");
-            if (TransformationActive_IronManMk5) MTUModPlayer.UseEquipSlot("IronManMk5");
-            if (TransformationActive_IronManMk6) MTUModPlayer.UseEquipSlot("IronManMk6");
-            if (TransformationActive_IronManMk7) MTUModPlayer.UseEquipSlot("IronManMk7");
+            if (TransformationActive_IronMan && !SuitEjected)
+            {
+                if (TransformationActive_WarMachineMk1) MTUModPlayer.UseEquipSlot("WarMachineMk1");
+                if (TransformationActive_IronManMk1) MTUModPlayer.UseEquipSlot("IronManMk1");
+                if (TransformationActive_IronManMk2) MTUModPlayer.UseEquipSlot("IronManMk2");
+                if (TransformationActive_IronManMk3) MTUModPlayer.UseEquipSlot("IronManMk3");
+                if (TransformationActive_IronManMk4) MTUModPlayer.UseEquipSlot("IronManMk4");
+                if (TransformationActive_IronManMk5) MTUModPlayer.UseEquipSlot("IronManMk5");
+                if (TransformationActive_IronManMk6) MTUModPlayer.UseEquipSlot("IronManMk6");
+                if (TransformationActive_IronManMk7) MTUModPlayer.UseEquipSlot("IronManMk7");
+            }
         }
 
         public override void PreUpdate()
@@ -162,7 +260,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
             {
                 Vector2 Offset = Main.MouseWorld - Player.Center;
 
-                if (Player.sleeping.isSleeping) TargetHeadRotation = 0;
+                if (Player.sleeping.isSleeping || !Flying) TargetHeadRotation = 0;
                 else
                 {
                     if (Flying)
@@ -175,12 +273,6 @@ namespace MarvelTerrariaUniverse.ModPlayers
                             if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
                         }
                     }
-                    else
-                    {
-                        Player.direction = Math.Sign(Offset.X);
-                        if (Math.Sign(Offset.X) == Player.direction) TargetHeadRotation = (Offset * Player.direction).ToRotation() * 0.55f;
-                        else TargetHeadRotation = 0;
-                    }
                 }
 
                 HeadRotation = MathHelper.Lerp(HeadRotation, TargetHeadRotation, 16f * (1f / 60));
@@ -191,27 +283,33 @@ namespace MarvelTerrariaUniverse.ModPlayers
         {
             if (TransformationActive_IronMan)
             {
-                Main.playerInventory = false;
+                SuitToggle();
 
-                if (Flying)
+                if (!SuitEjected)
                 {
-                    Player.legFrame.Y = 0 * Player.legFrame.Height;
+                    Main.playerInventory = false;
 
-                    FlameFrameTimer++;
-
-                    if (FlameFrameTimer > 5)
+                    if (Flying)
                     {
-                        if (FlameFrameCount >= (Hovering ? 1 : 2)) FlameFrameCount = 0;
-                        else FlameFrameCount++;
+                        Player.legFrame.Y = 0 * Player.legFrame.Height;
 
-                        FlameFrameTimer = 0;
+                        FlameFrameTimer++;
+
+                        if (FlameFrameTimer > 5)
+                        {
+                            if (FlameFrameCount >= (Hovering ? 1 : 2)) FlameFrameCount = 0;
+                            else FlameFrameCount++;
+
+                            FlameFrameTimer = 0;
+                        }
                     }
+
+                    FaceplateToggle();
+                    HelmetToggle();
+                    FlightToggle();
+                    WeaponFunctions();
                 }
             }
-
-            FaceplateToggle();
-            HelmetToggle();
-            FlightToggle();
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
@@ -233,7 +331,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
         public override void SetControls()
         {
-            if (TransformationActive_IronMan || GantryUIActive)
+            if ((TransformationActive_IronMan && !SuitEjected) || GantryUIActive)
             {
                 Player.controlCreativeMenu = false;
                 Player.controlHook = false;
@@ -252,9 +350,33 @@ namespace MarvelTerrariaUniverse.ModPlayers
         {
             if (TransformationActive_IronMan)
             {
-                if (Keybinds.IronMan_ToggleFaceplate.JustPressed && HelmetOn) FaceplateMoving = true;
-                if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
-                if (Keybinds.IronMan_ToggleFlight.JustPressed) FlightToggled = !FlightToggled;
+                if (Keybinds.IronMan_ToggleSuit.JustPressed)
+                {
+                    if (!SuitEjected) SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Depower"));
+
+                    SuitToggleRequested = true;
+                }
+
+                if (!SuitEjected)
+                {
+                    if (Keybinds.IronMan_ToggleFaceplate.JustPressed && HelmetOn)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle($"MarvelTerrariaUniverse/SoundEffects/IronMan/Faceplate_{(FaceplateOn ? "Off" : "On")}"));
+                        FaceplateMoving = true;
+                    }
+                    if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
+                    if (Keybinds.IronMan_ToggleFlight.JustPressed) FlightToggled = !FlightToggled;
+                    if (Keybinds.IronMan_FireRepulsor.JustPressed && !RepulsorRequested)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Charge"));
+                        RepulsorRequested = true;
+                    }
+                    if (Keybinds.IronMan_FireUnibeam.JustPressed && !UnibeamRequested)
+                    {
+                        SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Unibeam_Charge"));
+                        UnibeamRequested = true;
+                    }
+                }
             }
         }
     }

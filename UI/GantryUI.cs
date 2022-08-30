@@ -1,4 +1,5 @@
-﻿using MarvelTerrariaUniverse.ModPlayers;
+﻿using MarvelTerrariaUniverse.Items;
+using MarvelTerrariaUniverse.ModPlayers;
 using MarvelTerrariaUniverse.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,7 @@ using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -120,7 +122,7 @@ namespace MarvelTerrariaUniverse.UI
             SearchBarPanel.SetPadding(0f);
             SearchBarSection.Append(SearchBarPanel);
 
-            SearchBar = new(Language.GetText("Number / Codename"), 0.8f)
+            SearchBar = new(Language.GetText("Mods.MarvelTerrariaUniverse.IronMan.GantrySearchBarText"), 0.8f)
             {
                 Width = StyleDimension.FromPercent(1f),
                 Height = StyleDimension.FromPercent(1f),
@@ -189,7 +191,7 @@ namespace MarvelTerrariaUniverse.UI
 
             for (int i = 2; i <= 50; i++)
             {
-                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronManSuitAlias.{i}";
+                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronMan.{i}.Alias";
 
                 UIGantryEntryButton SuitButton = new(i);
                 SuitButtonGrid.Add(SuitButton);
@@ -240,12 +242,31 @@ namespace MarvelTerrariaUniverse.UI
             else
             {
                 SelectedOption = listeningElement as UIGantryEntryButton;
-                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronManSuitAlias.{SelectedOption.Index}";
+                string AliasKey = $"Mods.MarvelTerrariaUniverse.IronMan.{SelectedOption.Index}.Alias";
 
                 UIGantryEntryInfoPanel SelectedOptionInfo = new(SelectedOption.Index, 5, 5, Language.Exists(AliasKey) ? Language.GetTextValue(AliasKey) : null, !SelectedOption.Unlocked);
-                SelectedOptionInfo.Weapons = new() { "a", "b", "c" };
-                SelectedOptionInfo.Strengths = new() { "a", "b", "c" };
-                SelectedOptionInfo.Weaknesses = new() { "a", "b", "c" };
+
+                switch (SelectedOption.Index)
+                {
+                    case 2:
+                        SelectedOptionInfo.Weapons = new();
+                        break;
+                    case 3:
+                        SelectedOptionInfo.Weapons = new() { ModContent.ItemType<MicroMissiles>(), ModContent.ItemType<MicroGuns>(), ModContent.ItemType<Flares>() };
+                        break;
+                    case 4:
+                        SelectedOptionInfo.Weapons = new() { ModContent.ItemType<MicroMissiles>(), ModContent.ItemType<MicroGuns>(), ModContent.ItemType<Flares>() };
+                        break;
+                    case 5:
+                        SelectedOptionInfo.Weapons = new();
+                        break;
+                    case 6:
+                        SelectedOptionInfo.Weapons = new() { ModContent.ItemType<MicroMissiles>(), ModContent.ItemType<MicroGuns>(), ModContent.ItemType<Flares>(), ModContent.ItemType<LaserSystem>() };
+                        break;
+                    case 7:
+                        SelectedOptionInfo.Weapons = new() { ModContent.ItemType<MicroMissiles>(), ModContent.ItemType<Flares>(), ModContent.ItemType<LaserSystem>() };
+                        break;
+                }
 
                 SelectedOption.Initialize();
                 SuitInfoContentContainer.Append(SelectedOptionInfo);
