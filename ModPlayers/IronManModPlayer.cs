@@ -216,27 +216,24 @@ namespace MarvelTerrariaUniverse.ModPlayers
                 RepulsorCooldown++;
 
                 Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Player.Center - Main.MouseWorld).ToRotation() + MathHelper.PiOver2 - Player.fullRotation);
-                if (RepulsorCooldown >= 60)
+                if (RepulsorCooldown == 60)
                 {
-                    SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
-
-                    RepulsorCooldown = 0;
-                    RepulsorRequested = false;
+                    // SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), 0, 0);
                 }
             }
+            else RepulsorCooldown = 0;
 
             if (UnibeamRequested)
             {
                 UnibeamCooldown++;
 
-                if (UnibeamCooldown >= 180)
+                if (UnibeamCooldown == 180)
                 {
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
-
-                    UnibeamCooldown = 0;
-                    UnibeamRequested = false;
                 }
             }
+            else UnibeamCooldown = 0;
         }
 
         public override void FrameEffects()
@@ -364,18 +361,18 @@ namespace MarvelTerrariaUniverse.ModPlayers
                         SoundEngine.PlaySound(new SoundStyle($"MarvelTerrariaUniverse/SoundEffects/IronMan/Faceplate_{(FaceplateOn ? "Off" : "On")}"));
                         FaceplateMoving = true;
                     }
+
                     if (Keybinds.IronMan_ToggleHelmet.JustPressed) HelmetOn = false;
+
                     if (Keybinds.IronMan_ToggleFlight.JustPressed) FlightToggled = !FlightToggled;
-                    if (Keybinds.IronMan_FireRepulsor.JustPressed && !RepulsorRequested)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Charge"));
-                        RepulsorRequested = true;
-                    }
-                    if (Keybinds.IronMan_FireUnibeam.JustPressed && !UnibeamRequested)
-                    {
-                        SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Unibeam_Charge"));
-                        UnibeamRequested = true;
-                    }
+
+                    if (Keybinds.IronMan_FireRepulsor.JustPressed && !RepulsorRequested) SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Charge"));
+                    if (Keybinds.IronMan_FireRepulsor.Current && !RepulsorRequested) RepulsorRequested = true;
+                    if (Keybinds.IronMan_FireRepulsor.JustReleased) RepulsorRequested = false;
+
+                    if (Keybinds.IronMan_FireUnibeam.JustPressed && !UnibeamRequested) SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Unibeam_Charge"));
+                    if (Keybinds.IronMan_FireUnibeam.Current && !UnibeamRequested) UnibeamRequested = true;
+                    if (Keybinds.IronMan_FireUnibeam.JustReleased) UnibeamRequested = false;
                 }
             }
         }
