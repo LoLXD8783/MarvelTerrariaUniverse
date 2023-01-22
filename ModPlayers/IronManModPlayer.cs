@@ -1,8 +1,10 @@
-﻿using MarvelTerrariaUniverse.Mounts;
+﻿using MarvelTerrariaUniverse.Items;
+using MarvelTerrariaUniverse.Mounts;
 using MarvelTerrariaUniverse.Projectiles;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -45,6 +47,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
         public int UnibeamCooldown = 0;
         public bool UnibeamRequested = false;
+        public bool UnibeamAvailable = true;
 
         public readonly List<string> IronManSuitTextures = new();
 
@@ -105,6 +108,8 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
                 UnibeamCooldown = 0;
                 UnibeamRequested = false;
+                UnibeamAvailable = true;
+
 
                 TransformationActive_WarMachineMk1 = false;
                 TransformationActive_IronManMk1 = false;
@@ -211,29 +216,34 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
         public void WeaponFunctions()
         {
+            UnibeamCooldown++;
+
             if (RepulsorRequested)
             {
                 RepulsorCooldown++;
-
                 Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Player.Center - Main.MouseWorld).ToRotation() + MathHelper.PiOver2 - Player.fullRotation);
-                if (RepulsorCooldown == 60)
+                if (RepulsorCooldown % 10 == 0) // Every 10 ticks repulsor fires
                 {
-                    // SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
-                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), 0, 0);
+                    SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), 20, 1, Player.whoAmI);
                 }
             }
             else RepulsorCooldown = 0;
-
+            // Setting unibeam cooldown to 10 seconds
+            if (UnibeamCooldown % 600 == 0)
+            {
+                UnibeamCooldown = 0;
+                UnibeamAvailable = true;
+            }
             if (UnibeamRequested)
             {
-                UnibeamCooldown++;
-
-                if (UnibeamCooldown == 180)
+                if (UnibeamAvailable == true)
                 {
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManUnibeam>(), 20, 1, Player.whoAmI);
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+                    UnibeamAvailable = false; // Resetting cooldown
                 }
             }
-            else UnibeamCooldown = 0;
         }
 
         public override void FrameEffects()
