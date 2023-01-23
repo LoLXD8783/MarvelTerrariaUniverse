@@ -18,6 +18,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
         MTUModPlayer MTUModPlayer => Player.GetModPlayer<MTUModPlayer>();
 
         public bool GantryUIActive;
+        public float Power = 100f;
 
         public float HeadRotation;
         public float TargetHeadRotation;
@@ -110,6 +111,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
                 UnibeamRequested = false;
                 UnibeamAvailable = true;
 
+                Power = 100f;
 
                 TransformationActive_WarMachineMk1 = false;
                 TransformationActive_IronManMk1 = false;
@@ -184,6 +186,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
             {
                 Flying = true;
                 Player.mount.SetMount(ModContent.MountType<IronManFlight>(), Player, Player.direction == -1);
+                Power -= 0.5f;
 
                 if (FlameFrameCount < 2)
                 {
@@ -226,6 +229,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
                 {
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
                     Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), 20, 1, Player.whoAmI);
+                    Power -= 0.3f;
                 }
             }
             else RepulsorCooldown = 0;
@@ -241,6 +245,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
                 {
                     Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManUnibeam>(), 20, 1, Player.whoAmI);
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
+                    Power -= 5f;
                     UnibeamAvailable = false; // Resetting cooldown
                 }
             }

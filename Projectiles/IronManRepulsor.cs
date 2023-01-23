@@ -16,7 +16,6 @@ namespace MarvelTerrariaUniverse.Projectiles
 
         //The distance of beam from the player center
         private const float MOVE_DISTANCE = 25;
-        public int beamSize = 20;
         public float Distance
         {
             get => Projectile.ai[0];
@@ -55,7 +54,7 @@ namespace MarvelTerrariaUniverse.Projectiles
                 Color c = Color.White;
                 var origin = start + i * unit;
                Main.spriteBatch.Draw(texture, origin - Main.screenPosition,
-                    new Rectangle(0, 26, beamSize, 21), i < transDist ? Color.Transparent : c, r,
+                    new Rectangle(0, 26, 20, 21), i < transDist ? Color.Transparent : c, r,
                     new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
             }
             
@@ -93,8 +92,8 @@ namespace MarvelTerrariaUniverse.Projectiles
         {
             Player player = Main.player[Projectile.owner];
             Projectile.position = player.Center + Projectile.velocity * MOVE_DISTANCE;
-            beamSize -= 5;
-
+            Projectile.scale *= 0.3f;
+            if (Projectile.scale <= 0.01f) Projectile.Kill();
             UpdatePlayer(player);
             SetLaserPosition(player);
             //SpawnDusts(player);
