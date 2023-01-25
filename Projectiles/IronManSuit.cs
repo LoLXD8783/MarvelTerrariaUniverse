@@ -11,7 +11,7 @@ namespace MarvelTerrariaUniverse.Projectiles
 {
     public class IronManSuit : ModProjectile
     {
-        public override string Texture => "MarvelTerrariaUniverse/TransformationTextures/EmptyPixel";
+        public override string Texture => "MarvelTerrariaUniverse/IMTransformations/TransformationTextures/EmptyPixel";
 
         public override void SetStaticDefaults()
         {
@@ -55,7 +55,7 @@ namespace MarvelTerrariaUniverse.Projectiles
             IronManModPlayer IronManModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
             MTUModPlayer MTUModPlayer = Main.LocalPlayer.GetModPlayer<MTUModPlayer>();
 
-            Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/{MTUModPlayer.ActiveTransformation}/{MTUModPlayer.ActiveTransformation}_Preview").Value;
+            Texture2D Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{MTUModPlayer.ActiveTransformation}/{MTUModPlayer.ActiveTransformation}_Preview").Value;
 
             Main.spriteBatch.Draw(Texture, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, Projectile.rotation, Projectile.Size / 2, 1f, IronManModPlayer.EjectedSuitDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
 

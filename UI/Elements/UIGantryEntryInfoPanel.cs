@@ -118,7 +118,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             PreviewBackground.Append(TitleText);
 
-            UIImage PreviewImage = new(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/IronManMk{Index}/IronManMk{Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+            UIImage PreviewImage = new(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/IronManMk{Index}/IronManMk{Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
             {
                 ImageScale = 2f,
                 HAlign = 0.5f,

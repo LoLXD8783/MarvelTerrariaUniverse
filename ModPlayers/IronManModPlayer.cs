@@ -1,6 +1,7 @@
 ﻿using MarvelTerrariaUniverse.Items;
 using MarvelTerrariaUniverse.Mounts;
 using MarvelTerrariaUniverse.Projectiles;
+using MarvelTerrariaUniverse.IMTransformations.TransformationStats;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,10 @@ namespace MarvelTerrariaUniverse.ModPlayers
         MTUModPlayer MTUModPlayer => Player.GetModPlayer<MTUModPlayer>();
 
         public bool GantryUIActive;
+        public IronManStatsTemplate SuitSpecificStats = new IronManStatsTemplate();
+
         public float Power = 100f;
+        public float PowerRegen = 0f;
 
         public float HeadRotation;
         public float TargetHeadRotation;
@@ -49,6 +53,15 @@ namespace MarvelTerrariaUniverse.ModPlayers
         public int UnibeamCooldown = 0;
         public bool UnibeamRequested = false;
         public bool UnibeamAvailable = true;
+
+        public bool Arsenal1Requested = false;
+        public bool Arsenal1Available = true;
+
+        public bool Arsenal2Requested = false;
+        public bool Arsenal2Available = true;
+
+        public bool Arsenal3Requested = false;
+        public bool Arsenal3Available = true;
 
         public readonly List<string> IronManSuitTextures = new();
 
@@ -161,6 +174,8 @@ namespace MarvelTerrariaUniverse.ModPlayers
                 {
                     FaceplateMoving = false;
                     FaceplateOn = !FaceplateOn;
+                    Player.controlInv = !Player.controlInv;
+
                 }
             }
         }
@@ -184,19 +199,27 @@ namespace MarvelTerrariaUniverse.ModPlayers
         {
             if (FlightToggled)
             {
-                Flying = true;
-                Player.mount.SetMount(ModContent.MountType<IronManFlight>(), Player, Player.direction == -1);
-                Power -= 0.5f;
-
-                if (FlameFrameCount < 2)
+                if (Power > 0)
                 {
-                    FlameFrameTimer++;
+                    Flying = true;
+                    Player.mount.SetMount(ModContent.MountType<IronManFlight>(), Player, Player.direction == -1);
+                    Power -= SuitSpecificStats.flightDrainStat;
 
-                    if (FlameFrameTimer > 5)
+                    if (FlameFrameCount < 2)
                     {
-                        FlameFrameCount++;
-                        FlameFrameTimer = 0;
+                        FlameFrameTimer++;
+
+                        if (FlameFrameTimer > 5)
+                        {
+                            FlameFrameCount++;
+                            FlameFrameTimer = 0;
+                        }
                     }
+                }
+                else
+                {
+                    Flying = false;
+                    FlightToggled = false;
                 }
             }
             else
@@ -221,36 +244,49 @@ namespace MarvelTerrariaUniverse.ModPlayers
         {
             UnibeamCooldown++;
 
-            if (RepulsorRequested)
+            if (RepulsorRequested && Power > 0)
             {
                 RepulsorCooldown++;
                 Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Player.Center - Main.MouseWorld).ToRotation() + MathHelper.PiOver2 - Player.fullRotation);
-                if (RepulsorCooldown % 10 == 0) // Every 10 ticks repulsor fires
+                if (RepulsorCooldown % SuitSpecificStats.repulsorCooldown == 0) // Every 10 ticks repulsor fires
                 {
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
-                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), 20, 1, Player.whoAmI);
-                    Power -= 0.3f;
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManRepulsor>(), SuitSpecificStats.repulsorDamage, 1, Player.whoAmI);
+                    Power -= SuitSpecificStats.repulsorDrainStat;
                 }
             }
             else RepulsorCooldown = 0;
             // Setting unibeam cooldown to 10 seconds
-            if (UnibeamCooldown % 600 == 0)
+            if (UnibeamCooldown % SuitSpecificStats.unibeamCooldown == 0)
             {
                 UnibeamCooldown = 0;
                 UnibeamAvailable = true;
             }
-            if (UnibeamRequested)
+            if (UnibeamRequested && Power > 0 )
             {
                 if (UnibeamAvailable == true)
                 {
-                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManUnibeam>(), 20, 1, Player.whoAmI);
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), Player.Center, Vector2.Zero, ModContent.ProjectileType<IronManUnibeam>(), SuitSpecificStats.unibeamDamage, 1, Player.whoAmI);
                     SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/IronMan/Repulsor_Blast"));
-                    Power -= 5f;
+                    Power -= SuitSpecificStats.unibeamDrainStat;
                     UnibeamAvailable = false; // Resetting cooldown
                 }
             }
         }
 
+        public void PowerManagement()
+        {
+            PowerRegen = SuitSpecificStats.powerRegenStat;
+            Power += PowerRegen;
+            if (Power > 100)
+            {
+                Power = 100;
+            }
+            if (Power <= 0)
+            {
+                Power = 0;
+            }
+        }
         public override void FrameEffects()
         {
             if (TransformationActive_IronMan && !SuitEjected)
@@ -268,6 +304,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
 
         public override void PreUpdate()
         {
+
             if (TransformationActive_IronMan)
             {
                 Vector2 Offset = Main.MouseWorld - Player.Center;
@@ -315,7 +352,8 @@ namespace MarvelTerrariaUniverse.ModPlayers
                             FlameFrameTimer = 0;
                         }
                     }
-
+                    SuitSpecificStats.Update(MTUModPlayer.ActiveTransformation);
+                    PowerManagement();
                     FaceplateToggle();
                     HelmetToggle();
                     FlightToggle();

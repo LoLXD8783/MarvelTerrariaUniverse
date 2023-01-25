@@ -131,7 +131,7 @@ namespace MarvelTerrariaUniverse.UI.Elements
 
             if (Unlocked && !Initialized)
             {
-                Preview = new(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/IronManMk{Index}/IronManMk{Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
+                Preview = new(ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/IronManMk{Index}/IronManMk{Index}_Preview", ReLogic.Content.AssetRequestMode.ImmediateLoad))
                 {
                     HAlign = 0.5f,
                     VAlign = 0.5f

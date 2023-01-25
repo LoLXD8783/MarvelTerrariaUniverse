@@ -64,7 +64,7 @@ namespace MarvelTerrariaUniverse.ModPlayers
                         {
                             HeadLayer.RegisterData(EquipLoader.GetEquipSlot(Mod, $"{texture}_Faceplate{IronManModPlayer.FaceplateFrameCount}", EquipType.Head), new DrawLayerData()
                             {
-                                Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/TransformationTextures/Glowmasks/IronMan_Faceplate{IronManModPlayer.FaceplateFrameCount}_Glowmask"),
+                                Texture = ModContent.Request<Texture2D>($"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/Glowmasks/IronMan_Faceplate{IronManModPlayer.FaceplateFrameCount}_Glowmask"),
                                 Color = (drawInfo) => texture.Contains("WarMachine") ? new Color(255, 202, 191) : Color.White
                             });
                         }

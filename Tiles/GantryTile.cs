@@ -15,18 +15,18 @@ namespace MarvelTerrariaUniverse.Tiles
     {
         private void LoadEquipTextures(string texture)
         {
-            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Head", EquipType.Head, name: texture);
-            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Body", EquipType.Body, name: texture);
-            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/{texture}_Legs", EquipType.Legs, name: texture);
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/{texture}_Head", EquipType.Head, name: texture);
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/{texture}_Body", EquipType.Body, name: texture);
+            EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/{texture}_Legs", EquipType.Legs, name: texture);
 
             if (texture != "IronManMk1")
             {
-                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Flight/{texture}_Body_Flight", EquipType.Body, name: $"{texture}_Body_Flight");
-                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Flight/{texture}_Legs_Hover", EquipType.Legs, name: $"{texture}_Legs_Hover");
+                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/Flight/{texture}_Body_Flight", EquipType.Body, name: $"{texture}_Body_Flight");
+                EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/Flight/{texture}_Legs_Hover", EquipType.Legs, name: $"{texture}_Legs_Hover");
 
                 for (int i = 0; i < 6; i++)
                 {
-                    EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
+                    EquipLoader.AddEquipTexture(Mod, $"MarvelTerrariaUniverse/IMTransformations/TransformationTextures/{texture}/Faceplate/{texture}_Faceplate{i}", EquipType.Head, name: $"{texture}_Faceplate{i}");
                 }
             }
 
