@@ -11,8 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			base.SetStaticDefaults();
 			DisplayName.SetDefault("Spider-Man Leggings");
-			Tooltip.SetDefault("\n7% increased ranged critical strike chance"
-				+ "\n12% increased movement speed");
+			Tooltip.SetDefault("\n12% increased movement speed" + "\nNegates fall damage");
 		}
 
 		public override void SetDefaults() 
@@ -21,7 +20,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 24;
+			Item.defense = 8;
 		}
 
 		public override void UpdateEquip(Player player) 
@@ -33,9 +32,10 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		public override void AddRecipes() 
 		{
 			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 19)
-			.AddTile(TileID.Anvils)
+			.AddIngredient(ItemID.Cobweb, 20)
+			.AddIngredient(ItemID.Silk, 2)
+            .AddIngredient(ItemID.SpiderFang, 10)
+            .AddTile(TileID.Loom)
 			.Register();
 		}
 	}

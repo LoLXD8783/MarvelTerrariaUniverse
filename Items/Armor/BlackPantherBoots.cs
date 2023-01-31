@@ -34,7 +34,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			CreateRecipe()
 			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 19)
+			.AddIngredient(ItemID.TitaniumBar, 16)
 			.AddTile(TileID.Anvils)
 			.Register();
 		}

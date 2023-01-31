@@ -12,15 +12,15 @@ namespace MarvelTerrariaUniverse.IMTransformations.TransformationStats
     {
         public Mk2Stats()
         {
-            powerRegenStat = 1f;
-            flightDrainStat = 4f;
+            powerRegenStat = 0.01f;
+            flightDrainStat = 0.1f;
 
             repulsorDrainStat = 0.3f;
-            repulsorDamage = 60;
-            repulsorCooldown = 10;
+            repulsorDamage = 15;
+            repulsorCooldown = 20;
 
-            unibeamDrainStat = 1f;
-            unibeamDamage = 120;
+            unibeamDrainStat = 10f;
+            unibeamDamage = 30;
             unibeamCooldown = 600;
 
             flightSpeed = 1f;

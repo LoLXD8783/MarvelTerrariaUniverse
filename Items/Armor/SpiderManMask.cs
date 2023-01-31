@@ -22,7 +22,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 20;
+			Item.defense = 6;
 		}
 
 		public override void UpdateEquip(Player player)
@@ -45,9 +45,10 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		public override void AddRecipes() 
 		{
 			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 12)
-			.AddTile(TileID.Anvils)
+            .AddIngredient(ItemID.Cobweb, 10)
+            .AddIngredient(ItemID.Silk, 1)
+            .AddIngredient(ItemID.SpiderFang, 6)
+            .AddTile(TileID.Loom)
 			.Register();
 		}
 	}

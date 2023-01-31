@@ -1,1 +1,8 @@
-Terraria x Marvel (MCU) is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+Marvel Terraria Universe brings a new superhero experience to Terraria!
+Enter the MCU as a 2D sandbox with all new weapons, items, resources, and super powers.
+Our Beta release includes:
+- Iron Man Mk2-Mk7
+- Weapons like Mjolnir
+- Armors for Spider Man, Black Panther, and Captain America
+
+This is only the beginning! Join our discord to learn more and see whats in store for the future of the MTU.

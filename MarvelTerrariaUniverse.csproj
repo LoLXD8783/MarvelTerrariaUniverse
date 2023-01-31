@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Items\Armor\" />
+    <Folder Include="Items\Tiles\" />
   </ItemGroup>
 </Project>

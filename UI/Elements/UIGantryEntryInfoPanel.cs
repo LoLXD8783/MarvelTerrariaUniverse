@@ -277,22 +277,37 @@ namespace MarvelTerrariaUniverse.UI.Elements
                     ModPlayer.TransformationActive_IronManMk2 = true;
                     break;
                 case 3:
-                    ModPlayer.TransformationActive_IronManMk3 = true;
-                    break;
+                    if (NPC.downedSlimeKing)
+                    {
+                        ModPlayer.TransformationActive_IronManMk3 = true;
+                    }
+                        break;
+                    
                 case 4:
-                    ModPlayer.TransformationActive_IronManMk4 = true;
+                    if (NPC.downedBoss1)
+                    {
+                        ModPlayer.TransformationActive_IronManMk4 = true;
+                    }
                     break;
                 case 5:
-                    ModPlayer.TransformationActive_IronManMk5 = true;
+                    if (NPC.downedBoss2)
+                    {
+                        ModPlayer.TransformationActive_IronManMk5 = true;
+                    }
                     break;
                 case 6:
-                    ModPlayer.TransformationActive_IronManMk6 = true;
+                    if (NPC.downedBoss3)
+                    {
+                        ModPlayer.TransformationActive_IronManMk6 = true;
+                    }
                     break;
                 case 7:
-                    ModPlayer.TransformationActive_IronManMk7 = true;
+                    if (Main.hardMode)
+                    {
+                        ModPlayer.TransformationActive_IronManMk7 = true;
+                    }
                     break;
             }
-
             ModPlayer.GantryUIActive = false;
         }
 

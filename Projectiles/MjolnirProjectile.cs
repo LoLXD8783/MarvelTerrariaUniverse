@@ -16,9 +16,8 @@ namespace MarvelTerrariaUniverse.Projectiles
 			Projectile.arrow = true;
 			Projectile.width = 46;
 			Projectile.height = 44;
-			Projectile.CloneDefaults(ProjectileID.LightDisc);
-			// Projectile.aiStyle = ProjAIStyleID.Boomerang; This line is not needed since CloneDefaults sets it already.
-			Projectile.friendly = true;
+            AIType = ProjectileID.LightDisc;
+            Projectile.friendly = true;
 			Projectile.DamageType = DamageClass.Ranged;
 		}
 

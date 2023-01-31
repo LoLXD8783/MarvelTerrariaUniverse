@@ -11,8 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			base.SetStaticDefaults();
 			DisplayName.SetDefault("Spider-Man Suit");
-			Tooltip.SetDefault("\nGrants immunity to fire blocks and fire"
-				+ "\n4% increased melee damage"
+			Tooltip.SetDefault("\n4% increased melee damage"
 				+ "\n3% increased melee critical strike chance");
 		}
 
@@ -22,7 +21,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 20;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 28;
+			Item.defense = 8;
 		}
 
 		public override void UpdateEquip(Player player) 
@@ -36,8 +35,10 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		public override void AddRecipes() 
 		{
 			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddTile(TileID.Anvils)
+            .AddIngredient(ItemID.Cobweb, 20)
+            .AddIngredient(ItemID.Silk, 2)
+            .AddIngredient(ItemID.SpiderFang, 14)
+            .AddTile(TileID.Loom)
 			.Register();
 		}
 	}

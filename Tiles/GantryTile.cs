@@ -102,6 +102,14 @@ namespace MarvelTerrariaUniverse.Tiles
             Item.consumable = true;
             Item.createTile = ModContent.TileType<GantryTile>();
         }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+            .AddIngredient(ItemID.IronBar, 20)
+            .AddIngredient(ItemID.GoldBar, 5)
+            .Register();
+        }
     }
 
     public class GantryTile : ModTile
@@ -186,5 +194,6 @@ namespace MarvelTerrariaUniverse.Tiles
 
             return true;
         }
+
     }
 }

@@ -43,7 +43,7 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 			}
 		}
 
-		public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
 		{
 			// Inflict the OnFire debuff for 1 second onto any NPC/Monster that this hits.
 			// 60 frames = 1 second
