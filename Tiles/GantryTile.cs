@@ -162,7 +162,7 @@ namespace MarvelTerrariaUniverse.Tiles
 
             if (Timer > 3)
             {
-                if (PlayGantryFrames)
+                if (this.PlayGantryFrames)
                 {
                     if (GantryFrame < 46) GantryFrame++;
                 }
@@ -182,7 +182,7 @@ namespace MarvelTerrariaUniverse.Tiles
 
         public override void FloorVisuals(Player player)
         {
-            PlayGantryFrames = true;
+            this.PlayGantryFrames = true;
         }
 
         public override bool RightClick(int i, int j)
