@@ -11,9 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			DisplayName.SetDefault("Spider-Man Mask");
 			Tooltip.SetDefault("\n16% increased ranged damage"
-				+ "\n7% increased ranged critical strike chance"
-				+ "\n9% increased melee damage and critical strike chance"
-				+ "\n9% increased melee speed");
+				+ "\n7% increased ranged critical strike chance");
 		}
 
 		public override void SetDefaults() 
@@ -22,13 +20,13 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 6;
+			Item.defense = 4;
 		}
 
 		public override void UpdateEquip(Player player)
 		{
-			player.GetDamage(DamageClass.Melee) += 0.09f;
-			player.GetCritChance(DamageClass.Melee) += 9;
+			player.GetDamage(DamageClass.Ranged) += 0.16f;
+			player.GetCritChance(DamageClass.Ranged) += 7;
 		}
 
 		public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -40,16 +38,6 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			player.GetDamage(DamageClass.Melee) += 0.4f;
 			player.GetDamage(DamageClass.Ranged) += 0.4f;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-            .AddIngredient(ItemID.Cobweb, 10)
-            .AddIngredient(ItemID.Silk, 1)
-            .AddIngredient(ItemID.SpiderFang, 6)
-            .AddTile(TileID.Loom)
-			.Register();
 		}
 	}
 }

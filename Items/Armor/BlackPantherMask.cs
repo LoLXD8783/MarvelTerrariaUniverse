@@ -10,10 +10,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		public override void SetStaticDefaults() 
 		{
 			DisplayName.SetDefault("Black Panther Mask");
-			Tooltip.SetDefault("\n16% increased ranged damage"
-				+ "\n7% increased ranged critical strike chance"
-				+ "\n9% increased melee damage and critical strike chance"
-				+ "\n9% increased melee speed");
+			Tooltip.SetDefault("\n9% increased melee damage and critical strike chance");
 		}
 
 		public override void SetDefaults() 
@@ -22,7 +19,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 20;
+			Item.defense = 13;
 		}
 
 		public override void UpdateEquip(Player player)
@@ -39,16 +36,6 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		public override void UpdateArmorSet(Player player) 
 		{
 			player.GetDamage(DamageClass.Melee) += 0.4f;
-			player.GetDamage(DamageClass.Ranged) += 0.4f;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 12)
-			.AddTile(TileID.Anvils)
-			.Register();
 		}
 	}
 }

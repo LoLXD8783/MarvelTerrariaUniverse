@@ -11,7 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 		public override void SetStaticDefaults()
 		{
 			// The (English) text shown below your weapon's name. "ItemTooltip.HallowJoustingLance" will automatically be translated to "Build momentum to increase attack power".
-			Tooltip.SetDefault(Language.GetTextValue("ItemTooltip.HallowJoustingLance") + "\nThis melts your foes.");
+			Tooltip.SetDefault(Language.GetTextValue("ItemTooltip.HallowJoustingLance") + "\nCapable of liquifying victims");
 
 			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1; // The number of sacrifices that is required to research the item in Journey Mode.
 		}
@@ -28,7 +28,7 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 
 			Item.DamageType = DamageClass.MeleeNoSpeed; // We need to use MeleeNoSpeed here so that attack speed doesn't effect our held projectile.
 
-			Item.SetWeaponValues(56, 12f, 0); // A special method that sets the damage, knockback, and bonus critical strike chance.
+			Item.SetWeaponValues(200, 12f, 0); // A special method that sets the damage, knockback, and bonus critical strike chance.
 
 			Item.SetShopValues(ItemRarityColor.LightRed4, Item.buyPrice(0, 6)); // A special method that sets the rarity and value.
 
@@ -44,13 +44,6 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 		public override bool MeleePrefix()
 		{
 			return true;
-		}
-
-		// Please see Content/ExampleRecipes.cs for a detailed explanation of recipe creation.
-		public override void AddRecipes()
-		{
-			CreateRecipe()
-				.Register();
 		}
 	}
 }

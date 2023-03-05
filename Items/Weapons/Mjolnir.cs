@@ -1,7 +1,4 @@
-using MarvelTerrariaUniverse.Projectiles;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,40 +8,39 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("You are worthy.");
+			DisplayName.SetDefault("Mjolnir");
+			Tooltip.SetDefault("'Whosoever holds this hammer, if he be worthy, shall possess the power of Thor'" + "\nA powerful enchanted war-hammer");
 		}
 
 		public override void SetDefaults()
 		{
-			// Common Properties
-			Item.rare = ItemRarityID.Pink; // Assign this item a rarity level of Pink
-			Item.value = Item.sellPrice(silver: 10); // The number and type of coins item can be sold for to an NPC
-
-			// Use Properties
-			Item.useStyle = ItemUseStyleID.Shoot; // How you use the item (swinging, holding out, etc.)
-			Item.useAnimation = 20; // The length of the item's use animation in ticks (60 ticks == 1 second.)
-			Item.useTime = 20; // The length of the item's use time in ticks (60 ticks == 1 second.)
-			Item.UseSound = SoundID.Item1; // The sound that this item plays when used.
-			Item.autoReuse = false; // Allows the player to hold click to automatically use the item again. Most spears don't autoReuse, but it's possible when used in conjunction with CanUseItem()
-
-			// Weapon Properties
-			Item.damage = 100;
-			Item.knockBack = 6.5f;
-			Item.noUseGraphic = true; // When true, the item's sprite will not be visible while the item is in use. This is true because the spear projectile is what's shown so we do not want to show the spear sprite as well.
-			Item.DamageType = DamageClass.Melee;
-			Item.noMelee = true; // Allows the item's animation to do damage. This is important because the spear is actually a projectile instead of an item. This prevents the melee hitbox of this item.
-
-			// Projectile Properties
-			Item.shootSpeed = 3.7f; // The speed of the projectile measured in pixels per frame.
-			Item.shoot = ModContent.ProjectileType<MjolnirProjectile>(); // The projectile that is fired from this weapon
+			Item.damage = 98;
+			Item.DamageType = DamageClass.Ranged;
+			Item.width = 46;
+			Item.height = 44;
+			Item.useTime = 25;
+			Item.useAnimation = 25;
+			Item.noUseGraphic = true;
+			Item.useStyle = 1;
+			Item.knockBack = 3;
+			Item.value = 80000;
+			Item.rare = 8;
+			Item.shootSpeed = 12f;
+			Item.shoot = ModContent.ProjectileType<Projectiles.MjolnirProjectile>();
+			Item.UseSound = SoundID.Item7;
+			Item.autoReuse = true;
 		}
 
-		// Please see Content/ExampleRecipes.cs for a detailed explanation of recipe creation.
-		public override void AddRecipes()
+		public override bool CanUseItem(Player player)       //this make that you can shoot only 1 boomerang at once
 		{
-			CreateRecipe()
-				.AddIngredient(ItemID.GoldBar, 1)
-				.Register();
+			for (int i = 0; i < 1000; ++i)
+			{
+				if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == Item.shoot)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

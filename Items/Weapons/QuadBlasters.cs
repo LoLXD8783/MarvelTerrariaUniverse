@@ -11,7 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 		}
 
 		public override void SetDefaults() {
-			Item.damage = 40; // Sets the item's damage. Note that projectiles shot by this weapon will use its and the used ammunition's damage added together.
+			Item.damage = 35; // Sets the item's damage. Note that projectiles shot by this weapon will use its and the used ammunition's damage added together.
 			Item.DamageType = DamageClass.Ranged; // sets the damage type to ranged
 			Item.width = 38; // hitbox width of the item
 			Item.height = 22; // hitbox height of the item
@@ -27,14 +27,6 @@ namespace MarvelTerrariaUniverse.Items.Weapons
 			Item.shoot = 16; //idk why but all the guns in the vanilla source have this
 			Item.shootSpeed = 16f; // the speed of the projectile (measured in pixels per frame)
 			Item.noUseGraphic = false;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddTile(TileID.Anvils)
-			.Register();
 		}
 
 		/*

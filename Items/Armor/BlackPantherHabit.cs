@@ -11,8 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			base.SetStaticDefaults();
 			DisplayName.SetDefault("Black Panther Habit");
-			Tooltip.SetDefault("\nGrants immunity to fire blocks and fire"
-				+ "\n4% increased melee damage"
+			Tooltip.SetDefault("\n4% increased melee damage"
 				+ "\n3% increased melee critical strike chance");
 		}
 
@@ -22,24 +21,13 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 20;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 28;
+			Item.defense = 27;
 		}
 
 		public override void UpdateEquip(Player player) 
 		{
-			player.buffImmune[BuffID.OnFire] = true;
-			player.buffImmune[BuffID.Burning] = true;
 			player.GetDamage(DamageClass.Melee) += 0.04f;
 			player.GetCritChance(DamageClass.Melee) += 3;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-            .AddIngredient(ItemID.TitaniumBar, 20)
-            .AddTile(TileID.Anvils)
-			.Register();
 		}
 	}
 }

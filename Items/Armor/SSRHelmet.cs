@@ -9,11 +9,8 @@ namespace MarvelTerrariaUniverse.Items.Armor
 	{
 		public override void SetStaticDefaults() 
 		{
-			DisplayName.SetDefault("SSR Helmet");
-			Tooltip.SetDefault("\n16% increased ranged damage"
-				+ "\n7% increased ranged critical strike chance"
-				+ "\n9% increased melee damage and critical strike chance"
-				+ "\n9% increased melee speed");
+			DisplayName.SetDefault("Captain America SSR Field Helmet");
+			Tooltip.SetDefault("\n9% increased melee damage and critical strike chance");
 		}
 
 		public override void SetDefaults() 
@@ -22,7 +19,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 20;
+			Item.defense = 4;
 		}
 
 		public override void UpdateEquip(Player player)
@@ -33,22 +30,12 @@ namespace MarvelTerrariaUniverse.Items.Armor
 
 		public override bool IsArmorSet(Item head, Item body, Item legs)
 		{
-			return body.type == ModContent.ItemType<SSRArmor>() && legs.type == ModContent.ItemType<SSRBoots>();
+			return body.type == ModContent.ItemType<SSRUniform>() && legs.type == ModContent.ItemType<SSRBoots>();
 		}
 
-		public override void UpdateArmorSet(Player player) 
+		/*public override void UpdateArmorSet(Player player) 
 		{
 			player.GetDamage(DamageClass.Melee) += 0.4f;
-			player.GetDamage(DamageClass.Ranged) += 0.4f;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 12)
-			.AddTile(TileID.Anvils)
-			.Register();
-		}
+		}*/
 	}
 }

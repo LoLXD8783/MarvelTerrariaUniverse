@@ -21,9 +21,9 @@ namespace MarvelTerrariaUniverse
         public override void Load()
         {
             Reinstantiate = KeybindLoader.RegisterKeybind(Mod, "Reinstantiate UI", "R");
-            IronMan_ToggleSuit = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Suit", "Escape");
-            IronMan_ToggleFaceplate = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Faceplate", "M");
-            IronMan_ToggleHelmet = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Helmet", "N");
+            IronMan_ToggleSuit = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Suit", "X");
+            IronMan_ToggleFaceplate = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Faceplate", "G");
+            IronMan_ToggleHelmet = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Helmet", "H");
             IronMan_ToggleFlight = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Toggle Flight", "F");
             IronMan_FireRepulsor = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Fire Repulsor", "Mouse1");
             IronMan_FireUnibeam = KeybindLoader.RegisterKeybind(Mod, "Iron Man - Fire Unibeam", "Mouse2");

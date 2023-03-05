@@ -20,7 +20,7 @@ namespace MarvelTerrariaUniverse.Mounts
             MountData.usesHover = true;
             MountData.runSpeed = 9f;
             MountData.dashSpeed = 9f;
-            MountData.acceleration = 0.16f;
+            MountData.acceleration = 0.8f;
             MountData.jumpHeight = 10;
             MountData.jumpSpeed = 4f;
             MountData.blockExtraJumps = true;

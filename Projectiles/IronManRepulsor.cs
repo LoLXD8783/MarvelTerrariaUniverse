@@ -28,7 +28,7 @@ namespace MarvelTerrariaUniverse.Projectiles
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = true;
-            Projectile.DamageType = DamageClass.Magic;
+            Projectile.DamageType = DamageClass.Ranged;
             Projectile.hide = false;
             Projectile.timeLeft = 5; // The live time for the projectile (60 = 1 second, so 600 is 10 seconds)
 

@@ -96,8 +96,8 @@ namespace MarvelTerrariaUniverse.Tiles
             Item.noUseGraphic = true;
             Item.useAnimation = 15;
             Item.useTime = 10;
-            Item.width = 58;
-            Item.height = 46;
+            Item.width = 96;
+            Item.height = 74;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<GantryTile>();
@@ -106,8 +106,12 @@ namespace MarvelTerrariaUniverse.Tiles
         public override void AddRecipes()
         {
             CreateRecipe()
+            .AddIngredient(ItemID.CopperBar, 10)
             .AddIngredient(ItemID.IronBar, 20)
+            .AddIngredient(ItemID.LeadBar, 5)
             .AddIngredient(ItemID.GoldBar, 5)
+            .AddIngredient(ItemID.GrayPressurePlate, 1)
+            .AddTile(TileID.Anvils)
             .Register();
         }
     }

@@ -1,4 +1,4 @@
-displayName = Marvel Terraria Universe (MTU)
-author = Just Req, Hulk, Sami, GKai, Lexnos, Plors
-version = 0.1
-homepage = https://discord.gg/FdkEw35fye
+displayName = Marvel Terraria Universe (Alpha)
+author = Eye of Rage, Arnimox, SamiCRZ, Plors
+version = 0.1.2
+homepage = https://discord.gg/Q8DjHxJujC

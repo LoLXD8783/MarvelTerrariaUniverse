@@ -1,5 +1,5 @@
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace MarvelTerrariaUniverse.Projectiles
@@ -8,19 +8,19 @@ namespace MarvelTerrariaUniverse.Projectiles
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Thor's mighty hammer.");
+			DisplayName.SetDefault("Mjolnir Projectile");
 		}
 
 		public override void SetDefaults()
 		{
-			Projectile.arrow = true;
-			Projectile.width = 46;
-			Projectile.height = 44;
-            AIType = ProjectileID.LightDisc;
-            Projectile.friendly = true;
+			Projectile.width = 28;
+			Projectile.height = 28;
+			Projectile.aiStyle = 3;
+			Projectile.friendly = true;
 			Projectile.DamageType = DamageClass.Ranged;
+			Projectile.penetrate = 10;
+			Projectile.timeLeft = 600;
+			Projectile.extraUpdates = 1;
 		}
-
-		// Additional hooks/methods here.
 	}
 }

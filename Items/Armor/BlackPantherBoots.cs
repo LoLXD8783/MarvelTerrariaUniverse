@@ -11,8 +11,7 @@ namespace MarvelTerrariaUniverse.Items.Armor
 		{
 			base.SetStaticDefaults();
 			DisplayName.SetDefault("Black Panther Boots");
-			Tooltip.SetDefault("\n7% increased ranged critical strike chance"
-				+ "\n12% increased movement speed");
+			Tooltip.SetDefault("\n12% increased movement speed");
 		}
 
 		public override void SetDefaults() 
@@ -21,22 +20,13 @@ namespace MarvelTerrariaUniverse.Items.Armor
 			Item.height = 18;
 			Item.value = 10000;
 			Item.rare = ItemRarityID.Purple;
-			Item.defense = 24;
+			Item.defense = 18;
 		}
 
 		public override void UpdateEquip(Player player) 
 		{
 			player.moveSpeed += 0.12f;
 			player.noFallDmg = false;
-		}
-
-		public override void AddRecipes() 
-		{
-			CreateRecipe()
-			.AddIngredient(ItemID.GoldBar, 1)
-			.AddIngredient(ItemID.TitaniumBar, 16)
-			.AddTile(TileID.Anvils)
-			.Register();
 		}
 	}
 }
