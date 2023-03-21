@@ -1,4 +1,4 @@
-displayName = Marvel Terraria Universe (Alpha)
+displayName = (Alpha) Marvel Terraria Universe
 author = Eye of Rage, Arnimox, SamiCRZ, Plors
 version = 0.1.2
 homepage = https://discord.gg/Q8DjHxJujC

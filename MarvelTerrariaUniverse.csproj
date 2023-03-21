@@ -8,10 +8,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
+    <Compile Remove="Assets\Textures\Transformations\IronMan\Mark2\Faceplate\**" />
+    <EmbeddedResource Remove="Assets\Textures\Transformations\IronMan\Mark2\Faceplate\**" />
+    <None Remove="Assets\Textures\Transformations\IronMan\Mark2\Faceplate\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Items\Armor\" />
-    <Folder Include="Items\Tiles\" />
+    <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
   </ItemGroup>
 </Project>
