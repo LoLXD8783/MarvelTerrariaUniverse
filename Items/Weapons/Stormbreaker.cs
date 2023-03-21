@@ -1,0 +1,48 @@
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace MarvelTerrariaUniverse.Items.Weapons
+{
+	public class Stormbreaker : ModItem
+	{
+		public override void SetStaticDefaults()
+		{
+			DisplayName.SetDefault("Stormbreaker");
+			Tooltip.SetDefault("An enchanted axe, that only does damage to the player?" + "\nMaybe you're just not worthy" + "\nAnd yes, this needs to be fixed");
+			Item.staff[Item.type] = true;
+		}
+
+		public override void SetDefaults()
+		{
+			Item.damage = 20; //The damage
+			Item.DamageType = DamageClass.Magic; //Whether or not it is a magic weapon
+			Item.width = 54; //Item width
+			Item.height = 54; //Item height
+			Item.maxStack = 1; //How many of this item you can stack
+			Item.useTime = 60; //How long it takes for the item to be used
+			Item.useAnimation = 60; //How long the animation of the item takes
+			Item.knockBack = 8f; //How much knockback the item produces
+			Item.noMelee = true; //Whether the weapon should do melee damage or not
+			Item.useStyle = 5; //How the weapon is held, 5 is the gun hold style
+			Item.value = 120000; //How much the item is worth
+			Item.rare = 8; //The rarity of the item
+			Item.shoot = 580; //What the item shoots, retains an int value | *
+			Item.shootSpeed = 8f; //How fast the projectile fires
+			Item.autoReuse = true; //Whether it automatically uses the item again after its done being used/animated
+		}
+
+		public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+		{
+			SoundEngine.PlaySound(new SoundStyle("MarvelTerrariaUniverse/SoundEffects/Thunder"));
+			Vector2 vector82 = -Main.LocalPlayer.Center + Main.MouseWorld;
+			float ai = Main.rand.Next(100);
+			Vector2 vector83 = Vector2.Normalize(vector82) * Item.shootSpeed;
+			Projectile.NewProjectile(source, player.Center, vector83, type, damage, .49f, player.whoAmI, vector82.ToRotation(), ai);
+			return false;
+		}
+	}
+}

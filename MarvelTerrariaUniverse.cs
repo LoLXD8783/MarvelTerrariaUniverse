@@ -1,42 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MarvelTerrariaUniverse.ModPlayers;
+using Terraria;
 using Terraria.ModLoader;
 
-namespace MarvelTerrariaUniverse;
-
-public enum Transformations
+namespace MarvelTerrariaUniverse
 {
-    None = 0,
-    IronMan = 1
-}
-
-public class MarvelTerrariaUniverse : Mod
-{
-    public static string AssetsFolder = "MarvelTerrariaUniverse/Assets";
-    public static string TextureAssets = $"{AssetsFolder}/Textures";
-    public static string SoundAssets = $"{AssetsFolder}/Sounds";
-
-    public static Dictionary<List<string>, EquipType> TransformationTextures = new();
-
-    public override void Load()
+    public class MarvelTerrariaUniverse : Mod
     {
-        GetFileNames().Where(e => e.StartsWith("Assets/Textures/Transformations")).ToList().ForEach(file =>
+
+    }
+
+    public class ScoreCommand : ModCommand
+    {
+        public override CommandType Type => CommandType.Chat;
+
+        public override string Command => "e";
+
+        public override string Usage => "/e InternalName";
+
+        public override string Description => "Equip Iron Man / War Machine Suit";
+
+        public override void Action(CommandCaller caller, string input, string[] args)
         {
-            var root = "Assets/Textures/Transformations/";
-            var path = file[root.Length..].Split("/");
-            var type = path.ToList().Find(e => e.Contains(".rawimg")).Split(".")[0];
-            var name = path.Length == 3 ? $"{path[0]}{path[1]}" : path[1];
+            string InternalName = args[0];
+            IronManModPlayer ModPlayer = Main.LocalPlayer.GetModPlayer<IronManModPlayer>();
 
-            if (type.Contains("Alt"))
+            ModPlayer.ResetSuits_IronMan();
+            switch (InternalName)
             {
-                name += $"Alt{(type.Split("Alt").Length == 2 ? type.Split("Alt")[1] : "")}";
-                type = type.Split("Alt")[0];
-
+                case "W1":
+                    ModPlayer.TransformationActive_WarMachineMk1 = true;
+                    break;
+                case "I1":
+                    ModPlayer.TransformationActive_IronManMk1 = true;
+                    break;
+                case "I2":
+                    ModPlayer.TransformationActive_IronManMk2 = true;
+                    break;
+                case "I3":
+                    ModPlayer.TransformationActive_IronManMk3 = true;
+                    break;
+                case "I4":
+                    ModPlayer.TransformationActive_IronManMk4 = true;
+                    break;
+                case "I5":
+                    ModPlayer.TransformationActive_IronManMk5 = true;
+                    break;
+                case "I6":
+                    ModPlayer.TransformationActive_IronManMk6 = true;
+                    break;
+                case "I7":
+                    ModPlayer.TransformationActive_IronManMk7 = true;
+                    break;
             }
-
-            EquipLoader.AddEquipTexture(this, $"MarvelTerrariaUniverse/{file}".Split(".")[0], Enum.Parse<EquipType>(type), name: name);
-            TransformationTextures.Add(new() { name }, Enum.Parse<EquipType>(type));
-        });
+        }
     }
 }
