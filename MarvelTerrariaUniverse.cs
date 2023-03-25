@@ -14,8 +14,6 @@ public enum Transformations
 public class MarvelTerrariaUniverse : Mod
 {
     public static string AssetsFolder = "MarvelTerrariaUniverse/Assets";
-    public static string TextureAssets = $"{AssetsFolder}/Textures";
-    public static string SoundAssets = $"{AssetsFolder}/Sounds";
 
     public static Dictionary<List<string>, EquipType> TransformationTextures = new();
 

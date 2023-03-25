@@ -8,7 +8,7 @@ using Terraria.Enums;
 
 namespace MarvelTerrariaUniverse.Content.Projectiles.IronMan;
 
-public class Laser2 : ModProjectile // making another version of the laser
+/*public class Laser2 : ModProjectile // making another version of the laser
 {
     public override string Texture => ModContent.GetInstance<Laser>().Texture;
     public override void SetDefaults()
@@ -53,8 +53,8 @@ public class Laser2 : ModProjectile // making another version of the laser
         }
         // draw end texture
     }
-}
-public class Laser : ModProjectile
+}*/
+/*public class Laser : ModProjectile
 {
     //The distance of beam from the player center
     private const float MOVE_DISTANCE = 25;
@@ -182,9 +182,9 @@ public class Laser : ModProjectile
         }
     }
 
-    /*
+    *//*
     * Sets the end of the laser position based on where it collides with something
-    */
+    *//*
     private void SetLaserPosition(Player player)
     {
         for (Distance = MOVE_DISTANCE; Distance <= 2200f; Distance += 5f)
@@ -226,13 +226,13 @@ public class Laser : ModProjectile
 
     public override bool ShouldUpdatePosition() => false;
 
-    /*
+    *//*
     * Update CutTiles so the laser will cut tiles (like grass)
-    */
+    *//*
     public override void CutTiles()
     {
         DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
         Vector2 unit = Projectile.velocity;
         Utils.PlotTileLine(Projectile.Center, Projectile.Center + unit * Distance, (Projectile.width + 16) * Projectile.scale, DelegateMethods.CutTiles);
     }
-}
+}*/

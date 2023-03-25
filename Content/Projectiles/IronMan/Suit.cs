@@ -14,7 +14,7 @@ using ReLogic.Content;
 namespace MarvelTerrariaUniverse.Content.Projectiles.IronMan;
 public class IronManSuit : ModProjectile
 {
-    public override string Texture => $"{MarvelTerrariaUniverse.TextureAssets}/EmptyPixel";
+    public override string Texture => $"{MarvelTerrariaUniverse.AssetsFolder}/Textures/EmptyPixel";
 
     public override void SetStaticDefaults()
     {
@@ -81,7 +81,7 @@ public class IronManSuit : ModProjectile
 
     public override void PostDraw(Color lightColor)
     {
-        var texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.TextureAssets}/Glowmasks/IronMan/Faceplate0", AssetRequestMode.ImmediateLoad).Value;
+        var texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.AssetsFolder}/Textures/Glowmasks/IronMan/Faceplate0", AssetRequestMode.ImmediateLoad).Value;
         var position = Projectile.Center - Main.screenPosition - Projectile.Size / 2;
         Main.EntitySpriteDraw(texture, new Vector2(position.X + 7f, position.Y + 8f), new Rectangle(0, 0, texture.Width, texture.Height / 20), Color.White, Projectile.rotation, Projectile.Hitbox.Size() / 2f, 1f, Main.player[Projectile.owner].GetModPlayer<IronManPlayer>().SuitDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
     }

@@ -10,7 +10,7 @@ using Terraria.GameInput;
 namespace MarvelTerrariaUniverse.Content.Projectiles.IronMan;
 public class IronManHelmet : ModProjectile
 {
-    public override string Texture => $"{MarvelTerrariaUniverse.TextureAssets}/EmptyPixel";
+    public override string Texture => $"{MarvelTerrariaUniverse.AssetsFolder}/Textures/EmptyPixel";
 
     public override void SetStaticDefaults()
     {
@@ -70,7 +70,7 @@ public class IronManHelmet : ModProjectile
         var player = Main.player[Projectile.owner];
         var ironManPlayer = player.GetModPlayer<IronManPlayer>();
 
-        var Texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.TextureAssets}/Projectiles/IronMan/Helmet{ironManPlayer.Mark}").Value;
+        var Texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.AssetsFolder}/Textures/Projectiles/IronMan/Helmet{ironManPlayer.Mark}").Value;
         var HelmetFrame = ironManPlayer.FaceplateOn ? 0 : 1;
 
         Main.spriteBatch.Draw(Texture, Projectile.Center - Main.screenPosition, new Rectangle(0, Texture.Height / 2 * HelmetFrame, Texture.Width, Texture.Height / 2), Color.White, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);

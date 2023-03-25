@@ -26,7 +26,7 @@ public sealed class FlightFlame : PlayerDrawLayer
         var drawPlayer = drawInfo.drawPlayer;
         var ironManPlayer = drawPlayer.GetModPlayer<IronManPlayer>();
 
-        var texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.TextureAssets}/Glowmasks/IronMan/FlightFlame" + (ironManPlayer.Hovering ? "Alt" : "")).Value;
+        var texture = ModContent.Request<Texture2D>($"{MarvelTerrariaUniverse.AssetsFolder}/Textures/Glowmasks/IronMan/FlightFlame" + (ironManPlayer.Hovering ? "Alt" : "")).Value;
         var drawPos = drawInfo.Position - Main.screenPosition + new Vector2(drawPlayer.width / 2 - 10f - (drawPlayer.direction == 1 ? 2f + (!ironManPlayer.Hovering ? 2f : 0f) : 4f), drawPlayer.height - 8f) + drawPlayer.legPosition;
         var legsOffset = drawInfo.legsOffset;
 

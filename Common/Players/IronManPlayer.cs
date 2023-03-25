@@ -12,6 +12,7 @@ using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using MarvelTerrariaUniverse.Common.GantryUI;
 
 namespace MarvelTerrariaUniverse.Common.Players;
 public class IronManPlayer : ModPlayer
@@ -22,6 +23,8 @@ public class IronManPlayer : ModPlayer
         Repulsor = 1,
         Unibeam = 2
     }
+
+    public bool ShowGantryUI = false;
 
     public bool IsTransformed => Player.GetModPlayer<BasePlayer>().transformation == Transformations.IronMan;
 
@@ -73,6 +76,20 @@ public class IronManPlayer : ModPlayer
         HelmetDropped = false;
         HelmetOn = true;
         RotationCooldown = 30;
+    }
+
+    public void GantryUIAnimations()
+    {
+        if (ShowGantryUI)
+        {
+            GantryUIState.Visible = true;
+        }
+        else
+        {
+            // wait a bit for animation to finish
+
+            GantryUIState.Visible = false;
+        }
     }
 
     public void FlightAnimation()
@@ -177,7 +194,7 @@ public class IronManPlayer : ModPlayer
         if (!SuitOn) return;
 
         //if (Main.mouseLeft)
-        if (true)
+        /*if (true)
         {
             int count = 1;
             for (int i = 0; i < count; i++)
@@ -191,18 +208,27 @@ public class IronManPlayer : ModPlayer
                 //Main.mouseY = (int)(Math.Abs(Math.Sin(Main.GameUpdateCount / 100f)) * Main.screenHeight);
                 Projectile.NewProjectile(Terraria.Entity.GetSource_None(), pos, Vector2.UnitX.RotatedBy(k + MathHelper.Pi), ModContent.ProjectileType<Laser>(), 1, 1, Player.whoAmI);
 
-                /*
+                *//*
                     RequestedWeapon = Weapon.Repulsor;
                     Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Player.AngleTo(Main.MouseWorld) + MathHelper.PiOver2 * 3 - Player.fullRotation);
                     Vector2 pos = Player.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, Player.AngleTo(Main.MouseWorld) + MathHelper.PiOver2 - Player.fullRotation);
 
-                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), pos, Vector2.Zero, ModContent.ProjectileType<Laser>(), 1, 1, Player.whoAmI);*/
+                    Projectile.NewProjectile(Terraria.Entity.GetSource_None(), pos, Vector2.Zero, ModContent.ProjectileType<Laser>(), 1, 1, Player.whoAmI);*//*
             }
-        }
+        }*/
+    }
+
+    public override void ResetEffects()
+    {
+        ResetEverything();
+
+        ShowGantryUI = false;
     }
 
     public override void PostUpdate()
     {
+        GantryUIAnimations();
+
         if (!IsTransformed) return;
 
         FlightAnimation();
@@ -225,7 +251,7 @@ public class IronManPlayer : ModPlayer
 
         if (Main.dedServ) return;
 
-        var path = $"{MarvelTerrariaUniverse.TextureAssets}/Glowmasks/IronMan";
+        var path = $"{MarvelTerrariaUniverse.AssetsFolder}/Textures/Glowmasks/IronMan";
 
         if (SuitOn && HelmetOn && FaceplateFrame != 2 && FaceplateOn)
         {
@@ -281,7 +307,7 @@ public class IronManPlayer : ModPlayer
     {
         if (!IsTransformed || Mark <= 1 || !SuitOn) return;
 
-        if (KeybindSystem.FlightToggle.JustPressed)
+        if (KeybindSystem.ToggleFlight.JustPressed)
         {
             Flying = !Flying;
 
@@ -289,9 +315,9 @@ public class IronManPlayer : ModPlayer
             else Player.mount.Dismount(Player);
         }
 
-        if (KeybindSystem.FaceplateToggle.JustPressed && HelmetOn)
+        if (KeybindSystem.ToggleFaceplate.JustPressed && HelmetOn)
         {
-            SoundEngine.PlaySound(new SoundStyle($"{MarvelTerrariaUniverse.SoundAssets}/IronMan/Faceplate{(!FaceplateOn ? "On" : "Off")}"));
+            SoundEngine.PlaySound(new SoundStyle($"{MarvelTerrariaUniverse.AssetsFolder}/Sounds/IronMan/Faceplate{(!FaceplateOn ? "On" : "Off")}"));
             FaceplateMoving = true;
         }
 
@@ -299,7 +325,7 @@ public class IronManPlayer : ModPlayer
 
         if (KeybindSystem.EjectSuit.JustPressed)
         {
-            SoundEngine.PlaySound(new SoundStyle($"{MarvelTerrariaUniverse.SoundAssets}/IronMan/Depower"));
+            SoundEngine.PlaySound(new SoundStyle($"{MarvelTerrariaUniverse.AssetsFolder}/Sounds/IronMan/Depower"));
             SuitOn = false;
         }
     }
